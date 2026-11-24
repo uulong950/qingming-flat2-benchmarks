@@ -1,10 +1,13 @@
 # qingming-flat2-benchmarks
 
-**Results-only public benchmark for Qingming Flat2.** Performance, correctness, numerical accuracy, and raw timings from recorded experiments. This repository contains **no GPU kernels, build artifacts, or dataset payloads**.
+**性能 · 正确性 · 数值精度 · 可复现性证据**  
+Performance · Correctness · Numerical Accuracy · Reproducibility Evidence
 
-第一版：**v0.1.0** · 设备 MetaX C500 **sGPU 25% compute / 16,000 MiB VRAM quota** · SIFT1M / GIST960 · L2 squared · K=1/10。使用真实原始查询，GIST 不重复扩展至 B=10000。
+Qingming Flat2 的公开基准数据。计算、调优与 GPU 内核保存在独立的 `qingming-flat2` 工程。本仓库只展示可比较的性能结果、CPU 数值审计、确认轮次的原始采样和实验环境，不公开任何 GPU 内核、内部配置名称或消融参数。
 
-## Structure
+Public benchmark evidence for Qingming Flat2. This repository contains benchmark results, CPU numerical audits, holdout observations, and environment metadata, **not** proprietary kernels, internal tuning configurations, or ablation traces.
+
+## 目录 / Layout
 
 ```text
 qingming-flat2-benchmarks/
@@ -24,47 +27,51 @@ qingming-flat2-benchmarks/
             └── samples.csv
 ```
 
-The device **model** is the first grouping level; dataset is the second. The `index.json` catalog provides file paths so additional devices/datasets/metrics require no changes to the page's data logic. Metric is recorded as data, not as another directory level.
+## 首批结果 / Initial measurements
 
-## First dataset release
-
-| Dataset | Batches | K | Workloads qualified | Geometric mean acceleration* | Peak acceleration* |
+| 数据集 / Dataset | Batch | K | 当前协议合格 / Qualified | 几何平均加速 / GM speedup | 最大加速 / Peak |
 |---|---|---|---:|---:|---:|
-| SIFT1M (1M × 128) | 1, 10, 100, 1,000, 10,000 | 1, 10 | 10/10 | 1.804× | 4.302× |
-| GIST960 (1M × 960) | 1, 10, 100, 1,000 | 1, 10 | 8/8 | 1.294× | 1.768× |
+| SIFT1M (1M × 128) | 1, 10, 100, 1000, 10000 | 1, 10 | 10 / 10 | 1.804× | 4.302× |
+| GIST960 (1M × 960) | 1, 10, 100, 1000 | 1, 10 | 8 / 8 | 1.294× | 1.768× |
 
-* Same-session GPU Event P50 ratios, Qingming best qualifying Streaming variant versus mcFaiss on the **same sGPU allocation**; tuning rounds 1–2 and independent confirmation round 3. The qualification is under the specified **sampled-query full-database CPU oracle protocol**, not an all-query mathematical proof.
+来自同一 MetaX C500 **25% 算力 sGPU 分区、16,000 MiB 显存配额**，并非整卡对照。测试用原始查询，无重复扩展；GIST960 最多 B=1000。
 
-## How to publish
+Measured on the same **25% compute MetaX C500 sGPU partition (16,000 MiB VRAM quota)**, **not** a full board. Original queries only; no synthetic query repetition.
 
-1. Create a **public** GitHub repository named `qingming-flat2-benchmarks` and upload the content of this folder to its root.
-2. Repository **Settings → Pages → Build and deployment → Deploy from a branch**. Select `main` and `/ (root)` and save.
-3. The site will be served at `https://<github-user>.github.io/qingming-flat2-benchmarks/` once Pages deployment succeeds.
+## 公开文件含义 / Published data contract
 
-To preview locally (the browser cannot `fetch()` CSV with `file://`):
+- **`performance.csv`**：每个 Batch/K 的两引擎独立确认轮次延迟、QPS、加速比、正确性状态。**无内部配置名称**。One row per workload; final holdout performance and qualification without internal configuration details.
+- **`numerical.csv`**：仅针对最终报告的 Qingming 和 mcFaiss，在独立确认轮次记录 FP64/FP32 的抽样查询全库 Top-K 验证及全返回 ID 距离误差。Separate sampled Top-K audits and all-returned-ID distance errors.
+- **`samples.csv`**：只包含报告所用确认轮次的原始 Qingming/mcFaiss GPU Event 与 Host API 测量，足以复算公开的 P50 和加速比；**不包含私人调优过程**。Only the two reported backends' holdout observations; no private tuning traces.
+- **`environment.json`**：实际硬件配额、软件版本、测量协议、数据集哈希及外部 mcFaiss 版本和构建库哈希。Device allocation, versions, protocol, dataset checksums, and linked mcFaiss hashes.
+
+## 审查范围 / Audit scope
+
+CPU 全数据库 Top-K 验证只对预先固定的查询执行，不是所有查询的完整精确性证明。返回 ID 的 FP64/FP32 距离误差覆盖报告结果中的全部返回 ID。严格相等距离的边界并列是合法情况。QPS 按 Batch/P50 计算，属于批吞吐代理指标，并非长期持续服务 QPS；每轮 21 个样本的 P99 仅供描述。
+
+CPU Top-K oracle validation scans the full database for **preregistered query rows only**, not all queries. Distance error evaluation covers all IDs returned by both reported backends. Exact-distance ties are accepted. QPS is a batch/P50 proxy, not sustained service throughput; P99 from 21 observations is descriptive.
+
+因 GPU 内核未公开，第三方可以审计公开测量样本和数值检查结果，但无法独立从源码完整复现 Qingming 实验。公开文件中的完整性能统计与原测量记录一致；出于知识产权保护，私有调优轨迹不可作为公开证据审计。
+
+Source-level independent reproduction is not available without the private kernels. Published timing summaries can be recomputed from the final holdout samples; private tuning traces are not independently auditable from this repository.
+
+## 发布 / GitHub Pages
+
+仓库 Settings → Pages → Deploy from a branch → `main` / `(root)`。无需 Jekyll 主题。  
+Repository Settings → Pages → Deploy from a branch → `main` / `(root)`.
+
+本地预览 / Local preview:
 
 ```bash
-cd qingming-flat2-benchmarks
 python3 -m http.server 8000
-# Open http://localhost:8000
+# open http://localhost:8000/
 ```
 
-## Files and semantics
+## 版本 / Version
 
-- `environment.json`: actual device allocation, software versions, dataset hashes, benchmark scope and release provenance; no local absolute paths or hostnames.
-- `performance.csv`: **one row per** `(dataset, Batch, K)`; measured winner Qingming vs same-session mcFaiss, holdout P50/P90/P95/P99 GPU Event, Host API, QPS and acceleration. `QPS=1000×Batch/GPU_P50_ms` is a **batch throughput proxy**, **not** sustained multi-client throughput.
-- `numerical.csv`: all original CPU FP64/FP32 sampled-query full-database oracle audits for every case, plus all-returned-ID distance error audits for the selected holdout Qingming and mcFaiss runs. `scope` distinguishes these two fundamentally different claims. Only *exact* CPU distance ties are accepted for Top-K boundary replacement; numerical output tolerances **do not** relax rank membership.
-- `samples.csv`: **all** individual GPU Event and Host API timings: 3 rounds × 21 repeats × 9 backend/configuration combinations × the dataset's 8/10 workloads. This includes 8 Qingming variants and the mcFaiss baseline, without dropping slower variants.
-- `results-devices/index.json`: a simple site data catalog to add GPUs and datasets without editing the website logic.
+**v0.1.1** 仅修改公开数据边界和展示：中英双语极简界面、去除所有公开的内部配置/消融名称、确认轮次双引擎采样与数值记录；**未产生新的 GPU 实测数据**。Underlying source archive SHA-256 remains recorded in `environment.json`.
 
-### Audit limitations
 
-CPU oracle full-database Top-K validation covers **pre-selected query IDs within each Batch**, not all database × query pairs. For holdout selected Qingming and mcFaiss, CPU distance error is computed for **all returned IDs over every query row**. Both vendors are judged independently against the CPU FP64 and FP32 references. All datasets are FP32 storage and L2 squared; *internal instruction precision is not verified*.
+**v0.1.2 · UI refinement / 版式调整**：矩阵、数值表格与环境字段统一左对齐；优化视觉层级、间距与窄屏交互。**所有 CSV/JSON 证据文件与 v0.1.1 字节完全一致**，没有新增 GPU 测量；`environment.json` 保留其原始证据发布标识。
 
-The benchmark scope is **GPU device-resident search only**; index construction, transfers, service concurrency, peak device memory and stage-level timing are not in scope. Each P99 comes from only 21 samples in one round and is **descriptive**. The C500 was running as a **25% compute sGPU partition with a 16,000 MiB VRAM quota**, not exclusive full C500. Reported CPU identity from the virtualized host was inconsistent and was not promoted to a physical-host claim. mcFaiss had local worktree modifications; its Git commit and prebuilt library SHA256 are in `environment.json`.
-
-This repo intentionally provides **auditable outcomes, not independently runnable Qingming source code**. The source test archive's SHA256 and per-dataset CSV SHA256 are in the environment record. Future results should use a new immutable run ID rather than silently overwrite prior published evidence.
-
-## Data integrity
-
-The published CSVs were copied/reformatted from the original experiment archive `qingming_c500_matrix_20261124T004646Z.tar.gz`; no additional GPU measurements were created. SHA256 for the source archive, build sources and libraries is recorded in `results-devices/metax-c500/environment.json`.
+Matrix, numerical, and environment columns now share consistent left alignment. Responsive spacing and selection visibility are refined. All source evidence bytes remain unchanged from v0.1.1.
