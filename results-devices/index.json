@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "release": "v0.1.0",
+  "devices": [
+    {
+      "id": "metax-c500",
+      "name": "MetaX C500 · sGPU 25%",
+      "environment": "results-devices/metax-c500/environment.json",
+      "datasets": [
+        {
+          "id": "sift1m",
+          "name": "SIFT1M",
+          "metric": "L2 squared",
+          "n": 1000000,
+          "dimension": 128,
+          "queries": 10000,
+          "performance": "results-devices/metax-c500/sift1m/performance.csv",
+          "numerical": "results-devices/metax-c500/sift1m/numerical.csv",
+          "samples": "results-devices/metax-c500/sift1m/samples.csv"
+        },
+        {
+          "id": "gist960",
+          "name": "GIST960",
+          "metric": "L2 squared",
+          "n": 1000000,
+          "dimension": 960,
+          "queries": 1000,
+          "performance": "results-devices/metax-c500/gist960/performance.csv",
+          "numerical": "results-devices/metax-c500/gist960/numerical.csv",
+          "samples": "results-devices/metax-c500/gist960/samples.csv"
+        }
+      ]
+    }
+  ]
+}
