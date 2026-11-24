@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "release": "v0.2.0",
+  "release": "v0.3.0",
   "devices": [
     {
       "id": "metax-c500",
@@ -39,6 +39,17 @@
           "performance": "results-devices/metax-c500/llama-128-ip/performance.csv",
           "numerical": "results-devices/metax-c500/llama-128-ip/numerical.csv",
           "samples": "results-devices/metax-c500/llama-128-ip/samples.csv"
+        },
+        {
+          "id": "laion-clip-512-normalized",
+          "name": "LAION · CLIP 512",
+          "metric": "IP · max",
+          "n": 1000448,
+          "dimension": 512,
+          "queries": 1000,
+          "performance": "results-devices/metax-c500/laion-clip-512-normalized/performance.csv",
+          "numerical": "results-devices/metax-c500/laion-clip-512-normalized/numerical.csv",
+          "samples": "results-devices/metax-c500/laion-clip-512-normalized/samples.csv"
         }
       ]
     }

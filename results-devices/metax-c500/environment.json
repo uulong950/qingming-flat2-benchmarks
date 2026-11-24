@@ -29,7 +29,7 @@
     "h5py": "3.16.0",
     "host_cpu_report": "Captured in private run; physical CPU topology not asserted"
   },
-  "release": "qingming-flat2-benchmarks v0.2.0",
+  "release": "qingming-flat2-benchmarks v0.3.0",
   "benchmark": {
     "metric": "PER_DATASET_SEE_DATASETS_AND_RESULTS",
     "timing_scope": "DEVICE_RESIDENT_GPU_EVENT_SEARCH_ONLY; index/query resident; excludes H2D, D2H, index build",
@@ -49,13 +49,13 @@
     "abs_tolerance": 0.001,
     "rel_tolerance": 0.0001,
     "precision_note": "FP32 source data. Internal device kernel implementation details are not disclosed; FP64/FP32 CPU oracles are independently calculated.",
-    "expected_workloads": 26,
-    "qualified_workloads": 26,
+    "expected_workloads": 34,
+    "qualified_workloads": 34,
     "statistical_note": "P99 based on finite round samples; descriptive only",
     "evaluation_note": "Two selection rounds plus independent confirmation, numerically qualified before QPS selection.",
     "public_sample_scope": "HOLDOUT_SELECTED_QINGMING_AND_SAME_SESSION_MCFAISS_ONLY",
-    "public_samples_count": 1092,
-    "device_environment_note": "The hardware/software fields describe the same C500 partition measured in both runs. Run-specific identity and source hashes are stored under datasets.<id>."
+    "public_samples_count": 1428,
+    "device_environment_note": "Device allocation and software metadata apply to C500 sGPU measurements; see each dataset for its independent run and source hash. LAION source environment confirms kernel and vendor library hashes; hardware quota corresponds to C500 partition described above."
   },
   "provenance": {
     "source_archive_sha256": "PER_DATASET_SEE_DATASET_SOURCE_ARCHIVE_SHA256",
@@ -137,10 +137,33 @@
       "source_archive_sha256": "63251c8ad3b6316b0027ee3c31154c6bf7e73c891e927dc8d6e70f303a6014e0",
       "p90_note": "GPU P90 computed from 21 public holdout samples using linear interpolation, not present in original winners.csv",
       "captured_utc": "2026-11-24T03:55:19.495786+00:00"
+    },
+    "laion-clip-512-normalized": {
+      "n": 1000448,
+      "d": 512,
+      "nq": 1000,
+      "gt_k": 100,
+      "sha256": "af2bd007313eb35cb71f535c4b30b0e599a929979e55d99bb8bb91aabe1839cc",
+      "metric": "inner_product_max",
+      "normalized_source": true,
+      "original_hdf5_sha256": "a152088cefc13ac9fdfaa1722ae40a67a3a3b6598d764bf01ab162a61a2d1be9",
+      "run_id": "qingming_laion_clip512_ip_20261124T060230Z",
+      "query_policy": "ORIGINAL_ROWS_ONLY_NO_REPETITION",
+      "cpu_topk_coverage": "FULL_DATABASE_SAMPLED_QUERY_ROWS_ONLY",
+      "return_score_coverage": "ALL_RETURNED_IDS_HOLDOUT_ONLY",
+      "csv_sha256": {
+        "performance.csv": "9ff945197f317f7d019e163a56d7fa7c796f6b95f1a481b8d4b6c2d93e22ea3c",
+        "numerical.csv": "a8231288a3fef5004b86de7c9e5378dc08302618fbfb65c7da7aaf88cd7624ba",
+        "samples.csv": "991cd8f8120f2ecee8f77a307f8a81fee88c194e115a087365c19e334f02839e"
+      },
+      "source_archive_sha256": "a74c7afcba003cb7303402e799d710b97d8f8ffd25b02f836cebfdcfa25f4c63",
+      "source_environment_ref": "Private run environment.json (not all fields are public)",
+      "captured_utc": "2026-11-24T06:02:30.103392+00:00",
+      "query_boundary_note": "Supplemental FP64/FP32 tie-aware full-database audit of q=535 and q=748 reported separately after source archive creation; not included in this public CSV archive."
     }
   },
   "publication": {
-    "status": "18_OF_18_QUALIFIED_UNDER_CURRENT_PROTOCOL",
+    "status": "34_OF_34_QUALIFIED_UNDER_CURRENT_PROTOCOL",
     "limitations": [
       "CPU full-database Top-K oracle verifies only preregistered query rows",
       "No independent reconstruction of unpublished Qingming kernel",

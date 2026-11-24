@@ -25,7 +25,11 @@ qingming-flat2-benchmarks/
         │   ├── performance.csv
         │   ├── numerical.csv
         │   └── samples.csv
-        └── llama-128-ip/
+        ├── llama-128-ip/
+        │   ├── performance.csv
+        │   ├── numerical.csv
+        │   └── samples.csv
+        └── laion-clip-512-normalized/
             ├── performance.csv
             ├── numerical.csv
             └── samples.csv
@@ -38,10 +42,11 @@ qingming-flat2-benchmarks/
 | SIFT1M (1,000,000 × 128 · L2²) | 1, 10, 100, 1000, 10000 | 1, 10 | 10 / 10 | 3.263× | 15.001× |
 | GIST960 (1,000,000 × 960 · L2²) | 1, 10, 100, 1000 | 1, 10 | 8 / 8 | 1.293× | 1.762× |
 | Llama-128-IP (256,921 × 128 · IP max) | 1, 10, 100, 1000 | 1, 10 | 8 / 8 | 2.547× | 8.781× |
+| LAION-CLIP-512 (1,000,448 × 512 · normalized · IP max) | 1, 10, 100, 1000 | 1, 10 | 8 / 8 | 1.696× | 4.393× |
 
-来自同一 MetaX C500 **25% 算力 sGPU 分区、16,000 MiB 显存配额**，并非整卡对照。测试用原始查询，无重复扩展；GIST960 与 Llama-128-IP 最多 B=1000。Llama 采用最大内积排序，其数值分析核对 IP 分数而非 L2 距离。
+来自同一 MetaX C500 **25% 算力 sGPU 分区、16,000 MiB 显存配额**，并非整卡对照。测试用原始查询，无重复扩展；GIST960 与 Llama-128-IP 最多 B=1000。Llama 和 LAION 采用最大内积排序，其数值分析核对 IP 分数而非 L2 距离。LAION 使用原始归一化向量，不重新归一化；本轮测量 IP 而不声称精确 Cosine。
 
-Measured on the same **25% compute MetaX C500 sGPU partition (16,000 MiB VRAM quota)**, **not** a full board. Original queries only; no synthetic query repetition. Llama uses maximum inner product (IP); it is not an L2 test.
+Measured on the same **25% compute MetaX C500 sGPU partition (16,000 MiB VRAM quota)**, **not** a full board. Original queries only; no synthetic query repetition. Llama and LAION use maximum inner product (IP), not L2. LAION source vectors are already normalized and are not renormalized; this benchmark measures IP rather than claiming exact cosine ranking.
 
 ## 公开文件含义 / Published data contract
 
@@ -85,3 +90,8 @@ Matrix, numerical, and environment columns now share consistent left alignment. 
 **v0.2.0 · 三数据集结果合并 / Three datasets**：导入 2026-11-24 的 SIFT1M/GIST960 融合后正式确认结果及 Llama-128-IP 最大内积结果，合计 26 组通过当前审计范围的工作负载。仅发布确认轮次的对照原始采样；按当前数据集显示 Metric、Run ID 与来源归档哈希。
 
 SIFT1M and GIST960 use squared L2; Llama uses maximum inner product. All comparisons use same-session GPU events and independently audited CPU FP64/FP32 references. Only final confirmation-round observations are public. Internal tuning configurations and kernel source remain private.
+
+
+**v0.3.0 · LAION-CLIP-512 Normalized IP**：新增第四个真实数据集（1,000,448 × 512；1,000 条原始查询），8/8 组在当前协议下合格。独立确认轮次包含 336 条公开原始采样，FP64/FP32 审计 64 条。所有性能值可由确认轮次样本复算，数值审计范围仍是抽样查询全库 Top-K 与全部返回 ID 的 IP 分数，不是全部查询的严格排序证明。
+
+The fourth dataset is LAION-CLIP-512 (normalized source vectors, evaluated with maximum inner product). Eight workloads qualified under the stated protocol. Public evidence adds 336 holdout timing observations and 64 numerical audit records. CPU full-database rank verification covers selected queries only; returned-score checks cover all reported IDs.
