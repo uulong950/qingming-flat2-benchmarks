@@ -33,7 +33,11 @@ qingming-flat2-benchmarks/
         │   ├── performance.csv
         │   ├── numerical.csv
         │   └── samples.csv
-        └── glove-100-angular/
+        ├── glove-100-angular/
+        │   ├── performance.csv
+        │   ├── numerical.csv
+        │   └── samples.csv
+        └── deep10m/
             ├── performance.csv
             ├── numerical.csv
             └── samples.csv
@@ -48,6 +52,7 @@ qingming-flat2-benchmarks/
 | Llama-128-IP (256,921 × 128 · IP max) | 1, 10, 100, 1000 | 1, 10 | 8 / 8 | 2.547× | 8.781× |
 | LAION-CLIP-512 (1,000,448 × 512 · normalized · IP max) | 1, 10, 100, 1000 | 1, 10 | 8 / 8 | 1.696× | 4.393× |
 | GloVe-100-angular (1,183,514 × 100 · Cosine max) | 1, 10, 100, 1000, 10000 | 1, 10 | 10 / 10 | 3.173× | 16.073× |
+| DEEP10M (10,000,000 × 96 · L2²) | 1, 10, 100, 1000, 10000 | 1, 10 | 10 / 10 | 4.158× | 24.235× |
 
 来自同一 MetaX C500 **25% 算力 sGPU 分区、16,000 MiB 显存配额**，并非整卡对照。测试用原始查询，无重复扩展；GIST960 与 Llama-128-IP 最多 B=1000。Llama 和 LAION 采用最大内积排序，其数值分析核对 IP 分数而非 L2 距离。LAION 使用原始归一化向量，不重新归一化；本轮测量 IP 而不声称精确 Cosine。GloVe 使用离线 FP32 归一化向量进行 GPU 内积搜索，并以原始 FP32 向量的 FP64/FP32 Cosine 作为独立 CPU 参考，预处理时间不计入 GPU Resident Search。
 
@@ -105,3 +110,8 @@ The fourth dataset is LAION-CLIP-512 (normalized source vectors, evaluated with 
 **v0.4.0 · GloVe-100-angular · Cosine**：新增第五个真实数据集（1,183,514 × 100，10,000 条原始查询），10/10 组按当前协议合格；独立确认轮次增加 420 条公开 GPU Event/API 原始采样与 80 条数值审计记录。GPU 使用预先归一化的 FP32 数据执行最大内积；CPU Oracle 使用原始 FP32 向量独立计算 FP64/FP32 Cosine。归一化耗时记录于环境元数据，**不包含在 GPU 搜索延迟中**。全库 Top-K 仅核查预定抽样查询，并非全部查询的严格排名证明。
 
 The fifth dataset adds GloVe-100-angular cosine search (1,183,514 × 100, 10,000 original queries). All ten workloads qualify under the stated sampled-oracle protocol. Public evidence includes 420 holdout observations and 80 numerical audit rows. GPU search uses offline FP32-normalized vectors; independent CPU FP64/FP32 oracles compute cosine from raw input vectors. Preprocessing is measured separately and excluded from reported GPU search times. Full-database rank checks cover sampled query rows only.
+
+
+**v0.5.0 · DEEP10M · 第一阶段 C500 收官 / Phase I C500 Final**：新增第六个数据集 DEEP10M（10,000,000 × 96；10,000 条原始查询；Squared L2），K=1/10，Batch 最大 10,000。10/10 工作负载按当前协议合格，最高加速比 24.235×、几何平均 4.158×。独立确认轮次新增 420 条公开采样和 80 条数值审计记录。数据没有适用的 10M 官方 Ground Truth（`GT_K=0`），因此仅对预定抽样查询执行完整 10M 数据库 CPU FP64/FP32 Top-K 扫描；返回的所有 ID 则核对距离分数。本次 GPU Resident Search 时间不计数据加载、建库及主机设备传输。结果是 C500 25% sGPU 的分区测试，不是整卡成绩。
+
+The sixth dataset is DEEP10M (10 million × 96, squared L2), with K=1/10 and batches up to 10,000. All 10 workloads qualify under the stated protocol; public holdout evidence adds 420 timing observations and 80 numerical audit rows. No suitable official 10M-subset GT was provided (GT_K=0), so independent CPU FP64/FP32 full-database Top-K checks cover preregistered query rows only; all reported returned-ID distances are audited. GPU resident timing excludes data loading, indexing, and host-device transfers. Results use a 25% compute MetaX C500 sGPU partition, not the full card.

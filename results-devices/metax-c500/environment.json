@@ -29,7 +29,7 @@
     "h5py": "3.16.0",
     "host_cpu_report": "Captured in private run; physical CPU topology not asserted"
   },
-  "release": "qingming-flat2-benchmarks v0.4.0",
+  "release": "qingming-flat2-benchmarks v0.5.0",
   "benchmark": {
     "metric": "PER_DATASET_SEE_DATASETS_AND_RESULTS",
     "timing_scope": "DEVICE_RESIDENT_GPU_EVENT_SEARCH_ONLY; index/query resident; excludes H2D, D2H, index build",
@@ -49,13 +49,13 @@
     "abs_tolerance": 0.001,
     "rel_tolerance": 0.0001,
     "precision_note": "FP32 source data. GloVe GPU input is normalized offline before GPU resident search; independent CPU FP64/FP32 oracle uses raw source vectors. Unpublished kernel details are not disclosed.",
-    "expected_workloads": 44,
-    "qualified_workloads": 44,
+    "expected_workloads": 54,
+    "qualified_workloads": 54,
     "statistical_note": "P99 based on finite round samples; descriptive only",
     "evaluation_note": "Two selection rounds plus independent confirmation, numerically qualified before QPS selection.",
     "public_sample_scope": "HOLDOUT_SELECTED_QINGMING_AND_SAME_SESSION_MCFAISS_ONLY",
-    "public_samples_count": 1848,
-    "device_environment_note": "C500 25% sGPU and 16,000 MiB allocation; datasets are separate runs. GloVe uses offline FP32 normalization for GPU/mcFaiss, independent raw-vector cosine CPU oracles, and reports preprocessing time separately, excluding it from GPU resident search latency."
+    "public_samples_count": 2268,
+    "device_environment_note": "MetaX C500 25% compute sGPU, 16,000 MiB VRAM quota. Separate run per dataset. DEEP10M uses unmodified FP32 database/query data, independent CPU FP64/FP32 sampled full-10M Top-K oracles, and no 10M official GT. Resident GPU timing excludes data loading and indexing. GloVe normalization is offline and excluded from resident GPU time."
   },
   "provenance": {
     "source_archive_sha256": "PER_DATASET_SEE_DATASET_SOURCE_ARCHIVE_SHA256",
@@ -188,15 +188,41 @@
       "source_environment_ref": "Private run environment.json (not all fields are public)",
       "captured_utc": "2026-11-24T07:03:16.163445+00:00",
       "qualification_note": "10/10 shapes qualified under sampled full-database raw cosine Top-K and all-returned-score FP64/FP32 audit; not exhaustive all-query rank proof."
+    },
+    "deep10m": {
+      "n": 10000000,
+      "d": 96,
+      "nq": 10000,
+      "gt_k": 0,
+      "metric": "l2_squared_min",
+      "sha256": "d313e3324f99cad78f9de22cd3cb7649dba9d616ff9c34260a119df176d180ec",
+      "original_base_fbin_sha256": "290b341abc7ba570541e013fd20fd6d38c5873490ef395b512de5ed8dee18ce7",
+      "original_query_fbin_sha256": "8438fc763f14e0f9741fda15b3e11215aef089ce17d1ad47d53b52a7c9fda5bb",
+      "run_id": "qingming_deep10m_l2_20261124T080123Z",
+      "query_policy": "ORIGINAL_ROWS_ONLY_NO_REPETITION",
+      "cpu_topk_coverage": "FULL_10M_DATABASE_SAMPLED_QUERY_ROWS_ONLY_NO_OFFICIAL_GT",
+      "return_distance_coverage": "ALL_RETURNED_IDS_HOLDOUT_ONLY",
+      "csv_sha256": {
+        "numerical.csv": "fea956a051de5fc0b9306d996932c49c14b70793b574ccaaed7d0b95b4924c89",
+        "performance.csv": "de44a2124490a4efed4b7faecebfb23ee39884626b259e14a1ff63b5692b9066",
+        "samples.csv": "8b4a8ec7880b946a79c43384d8831275d18a23edce3a33debf4a31813830bcff"
+      },
+      "source_archive_sha256": "ee8fd6bc90aaea1a8052fe2b9a99362fa7fb43e376e7b8e06ded36979aa714b3",
+      "source_environment_ref": "Private run environment.json (not all fields are public)",
+      "captured_utc": "2026-11-24T08:01:23.267895+00:00",
+      "p90_note": "GPU P90 computed from final holdout 21-sample timing list using linear interpolation",
+      "ground_truth_note": "GT_K=0: 1B ground truth is not reused for the 10M subset. CPU full scan on specified query rows.",
+      "qualification_note": "10/10 workloads qualified under sampled full-database CPU FP64/FP32 L2 Top-K and all-returned-ID-distance checks; not all-query full ranking proof."
     }
   },
   "publication": {
-    "status": "44_OF_44_QUALIFIED_UNDER_CURRENT_PROTOCOL",
+    "status": "54_OF_54_QUALIFIED_UNDER_CURRENT_PROTOCOL",
     "limitations": [
       "CPU full-database Top-K oracle verifies only preregistered query rows",
       "No independent reconstruction of unpublished Qingming kernel",
       "Finite-sample P99 is descriptive",
-      "GPU exclusivity not claimed"
+      "GPU exclusivity not claimed",
+      "DEEP10M has no appropriate official GT for 10M subset; 1B GT is never reused"
     ]
   }
 }
