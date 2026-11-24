@@ -4,7 +4,7 @@
   "devices": [
     {
       "id": "metax-c500",
-      "name": "MetaX C500 · verify sGPU quota in environment",
+      "name": "MetaX C500",
       "environment": "results-devices/metax-c500/environment.json",
       "datasets": [
         {
