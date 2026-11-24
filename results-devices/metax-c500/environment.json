@@ -29,7 +29,7 @@
     "h5py": "3.16.0",
     "host_cpu_report": "Captured in private run; physical CPU topology not asserted"
   },
-  "release": "qingming-flat2-benchmarks v0.3.0",
+  "release": "qingming-flat2-benchmarks v0.4.0",
   "benchmark": {
     "metric": "PER_DATASET_SEE_DATASETS_AND_RESULTS",
     "timing_scope": "DEVICE_RESIDENT_GPU_EVENT_SEARCH_ONLY; index/query resident; excludes H2D, D2H, index build",
@@ -43,19 +43,19 @@
       "CPU FP32 full database scan for preregistered query IDs"
     ],
     "oracle_coverage": "SAMPLED_QUERY_ROWS_ONLY (not all-query full-search proof)",
-    "return_distance_coverage": "ALL_RETURNED_IDS_ALL_QUERY_ROWS for final reported Qingming / mcFaiss; L2 distances or IP scores as appropriate",
-    "tie_policy": "Exact CPU L2 distance ties or IP score ties accepted as valid alternate boundary IDs",
+    "return_distance_coverage": "ALL_RETURNED_IDS_ALL_QUERY_ROWS for final reported Qingming / mcFaiss; L2 distances, IP scores, or raw-vector cosine scores as appropriate",
+    "tie_policy": "Exact CPU L2, IP or raw cosine score ties accepted as valid alternate boundary IDs",
     "rank_tolerance": "ZERO for membership; output distance tolerance separate",
     "abs_tolerance": 0.001,
     "rel_tolerance": 0.0001,
-    "precision_note": "FP32 source data. Internal device kernel implementation details are not disclosed; FP64/FP32 CPU oracles are independently calculated.",
-    "expected_workloads": 34,
-    "qualified_workloads": 34,
+    "precision_note": "FP32 source data. GloVe GPU input is normalized offline before GPU resident search; independent CPU FP64/FP32 oracle uses raw source vectors. Unpublished kernel details are not disclosed.",
+    "expected_workloads": 44,
+    "qualified_workloads": 44,
     "statistical_note": "P99 based on finite round samples; descriptive only",
     "evaluation_note": "Two selection rounds plus independent confirmation, numerically qualified before QPS selection.",
     "public_sample_scope": "HOLDOUT_SELECTED_QINGMING_AND_SAME_SESSION_MCFAISS_ONLY",
-    "public_samples_count": 1428,
-    "device_environment_note": "Device allocation and software metadata apply to C500 sGPU measurements; see each dataset for its independent run and source hash. LAION source environment confirms kernel and vendor library hashes; hardware quota corresponds to C500 partition described above."
+    "public_samples_count": 1848,
+    "device_environment_note": "C500 25% sGPU and 16,000 MiB allocation; datasets are separate runs. GloVe uses offline FP32 normalization for GPU/mcFaiss, independent raw-vector cosine CPU oracles, and reports preprocessing time separately, excluding it from GPU resident search latency."
   },
   "provenance": {
     "source_archive_sha256": "PER_DATASET_SEE_DATASET_SOURCE_ARCHIVE_SHA256",
@@ -160,10 +160,38 @@
       "source_environment_ref": "Private run environment.json (not all fields are public)",
       "captured_utc": "2026-11-24T06:02:30.103392+00:00",
       "query_boundary_note": "Supplemental FP64/FP32 tie-aware full-database audit of q=535 and q=748 reported separately after source archive creation; not included in this public CSV archive."
+    },
+    "glove-100-angular": {
+      "n": 1183514,
+      "d": 100,
+      "nq": 10000,
+      "gt_k": 100,
+      "sha256": "2667c5c4de76f4fc822cd069a6b6498db5e1e456b8eb7383ee5218ca74c5da29",
+      "metric": "cosine_similarity_max",
+      "original_hdf5_sha256": "544af1d5e84e112cd4749571dcfd8ca109818a572f850af75a3a09e093a953c4",
+      "raw_input_sha256": "95aa4aa0bc168454ebfc0d610dba42531c90c293ac079befb8c4624382e1bfaa",
+      "gpu_input_definition": "Offline FP32 normalized vectors, maximum inner product of normalized vectors",
+      "cpu_oracle_definition": "Independent raw-input CPU FP64/FP32 cosine similarity",
+      "normalization_preprocessing_wall_seconds": 2.6354805999435484,
+      "normalization_definition": "FP64 sqrt(sum(raw_FP32_i^2)) and FP64 division, cast to FP32 per dimension",
+      "timing_excludes_preprocessing": true,
+      "run_id": "qingming_glove100_cosine_20261124T070316Z",
+      "query_policy": "ORIGINAL_ROWS_ONLY_NO_REPETITION",
+      "cpu_topk_coverage": "FULL_DATABASE_SAMPLED_QUERY_ROWS_ONLY",
+      "return_score_coverage": "ALL_RETURNED_IDS_HOLDOUT_ONLY",
+      "csv_sha256": {
+        "performance.csv": "0261a3b134ad09a07d7e10e552dff712f55ae2b6752f582928e0b3f7bc909d9b",
+        "numerical.csv": "9372eb46194b5a3f2aeb69a2b1e3e238513a4c94b250316b1887e0afb197c219",
+        "samples.csv": "f6f85ab424671f347b085c78595335c357ed55d5e6b48a76936570cffc96f2ef"
+      },
+      "source_archive_sha256": "9e2428e4ed5928af0b3b6aa86eed22560db187aedb8a4b4d1a0c1a1280096886",
+      "source_environment_ref": "Private run environment.json (not all fields are public)",
+      "captured_utc": "2026-11-24T07:03:16.163445+00:00",
+      "qualification_note": "10/10 shapes qualified under sampled full-database raw cosine Top-K and all-returned-score FP64/FP32 audit; not exhaustive all-query rank proof."
     }
   },
   "publication": {
-    "status": "34_OF_34_QUALIFIED_UNDER_CURRENT_PROTOCOL",
+    "status": "44_OF_44_QUALIFIED_UNDER_CURRENT_PROTOCOL",
     "limitations": [
       "CPU full-database Top-K oracle verifies only preregistered query rows",
       "No independent reconstruction of unpublished Qingming kernel",

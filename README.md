@@ -29,7 +29,11 @@ qingming-flat2-benchmarks/
         │   ├── performance.csv
         │   ├── numerical.csv
         │   └── samples.csv
-        └── laion-clip-512-normalized/
+        ├── laion-clip-512-normalized/
+        │   ├── performance.csv
+        │   ├── numerical.csv
+        │   └── samples.csv
+        └── glove-100-angular/
             ├── performance.csv
             ├── numerical.csv
             └── samples.csv
@@ -43,10 +47,11 @@ qingming-flat2-benchmarks/
 | GIST960 (1,000,000 × 960 · L2²) | 1, 10, 100, 1000 | 1, 10 | 8 / 8 | 1.293× | 1.762× |
 | Llama-128-IP (256,921 × 128 · IP max) | 1, 10, 100, 1000 | 1, 10 | 8 / 8 | 2.547× | 8.781× |
 | LAION-CLIP-512 (1,000,448 × 512 · normalized · IP max) | 1, 10, 100, 1000 | 1, 10 | 8 / 8 | 1.696× | 4.393× |
+| GloVe-100-angular (1,183,514 × 100 · Cosine max) | 1, 10, 100, 1000, 10000 | 1, 10 | 10 / 10 | 3.173× | 16.073× |
 
-来自同一 MetaX C500 **25% 算力 sGPU 分区、16,000 MiB 显存配额**，并非整卡对照。测试用原始查询，无重复扩展；GIST960 与 Llama-128-IP 最多 B=1000。Llama 和 LAION 采用最大内积排序，其数值分析核对 IP 分数而非 L2 距离。LAION 使用原始归一化向量，不重新归一化；本轮测量 IP 而不声称精确 Cosine。
+来自同一 MetaX C500 **25% 算力 sGPU 分区、16,000 MiB 显存配额**，并非整卡对照。测试用原始查询，无重复扩展；GIST960 与 Llama-128-IP 最多 B=1000。Llama 和 LAION 采用最大内积排序，其数值分析核对 IP 分数而非 L2 距离。LAION 使用原始归一化向量，不重新归一化；本轮测量 IP 而不声称精确 Cosine。GloVe 使用离线 FP32 归一化向量进行 GPU 内积搜索，并以原始 FP32 向量的 FP64/FP32 Cosine 作为独立 CPU 参考，预处理时间不计入 GPU Resident Search。
 
-Measured on the same **25% compute MetaX C500 sGPU partition (16,000 MiB VRAM quota)**, **not** a full board. Original queries only; no synthetic query repetition. Llama and LAION use maximum inner product (IP), not L2. LAION source vectors are already normalized and are not renormalized; this benchmark measures IP rather than claiming exact cosine ranking.
+Measured on the same **25% compute MetaX C500 sGPU partition (16,000 MiB VRAM quota)**, **not** a full board. Original queries only; no synthetic query repetition. Llama and LAION use maximum inner product (IP), not L2. LAION source vectors are already normalized and are not renormalized; this benchmark measures IP rather than claiming exact cosine ranking. GloVe evaluates cosine similarity using offline FP32-normalized GPU inputs and independent raw-vector FP64/FP32 cosine CPU oracles; preprocessing is excluded from GPU resident search latency.
 
 ## 公开文件含义 / Published data contract
 
@@ -57,9 +62,9 @@ Measured on the same **25% compute MetaX C500 sGPU partition (16,000 MiB VRAM qu
 
 ## 审查范围 / Audit scope
 
-CPU 全数据库 Top-K 验证只对预先固定的查询执行，不是所有查询的完整精确性证明。返回 ID 的 FP64/FP32 距离或 IP 分数误差覆盖报告结果中的全部返回 ID。严格相等距离的边界并列是合法情况。QPS 按 Batch/P50 计算，属于批吞吐代理指标，并非长期持续服务 QPS；每轮 21 个样本的 P99 仅供描述。
+CPU 全数据库 Top-K 验证只对预先固定的查询执行，不是所有查询的完整精确性证明。返回 ID 的 FP64/FP32 距离、IP 或 Cosine 分数误差覆盖报告结果中的全部返回 ID。严格相等距离的边界并列是合法情况。QPS 按 Batch/P50 计算，属于批吞吐代理指标，并非长期持续服务 QPS；每轮 21 个样本的 P99 仅供描述。
 
-CPU Top-K oracle validation scans the full database for **preregistered query rows only**, not all queries. Distance error evaluation covers all IDs returned by both reported backends. Exact-distance ties are accepted. QPS is a batch/P50 proxy, not sustained service throughput; P99 from 21 observations is descriptive.
+CPU Top-K oracle validation scans the full database for **preregistered query rows only**, not all queries. Distance/score error evaluation covers all IDs returned by both reported backends. Exact-distance ties are accepted. QPS is a batch/P50 proxy, not sustained service throughput; P99 from 21 observations is descriptive.
 
 因 GPU 内核未公开，第三方可以审计公开测量样本和数值检查结果，但无法独立从源码完整复现 Qingming 实验。公开文件中的完整性能统计与原测量记录一致；出于知识产权保护，私有调优轨迹不可作为公开证据审计。
 
@@ -95,3 +100,8 @@ SIFT1M and GIST960 use squared L2; Llama uses maximum inner product. All compari
 **v0.3.0 · LAION-CLIP-512 Normalized IP**：新增第四个真实数据集（1,000,448 × 512；1,000 条原始查询），8/8 组在当前协议下合格。独立确认轮次包含 336 条公开原始采样，FP64/FP32 审计 64 条。所有性能值可由确认轮次样本复算，数值审计范围仍是抽样查询全库 Top-K 与全部返回 ID 的 IP 分数，不是全部查询的严格排序证明。
 
 The fourth dataset is LAION-CLIP-512 (normalized source vectors, evaluated with maximum inner product). Eight workloads qualified under the stated protocol. Public evidence adds 336 holdout timing observations and 64 numerical audit records. CPU full-database rank verification covers selected queries only; returned-score checks cover all reported IDs.
+
+
+**v0.4.0 · GloVe-100-angular · Cosine**：新增第五个真实数据集（1,183,514 × 100，10,000 条原始查询），10/10 组按当前协议合格；独立确认轮次增加 420 条公开 GPU Event/API 原始采样与 80 条数值审计记录。GPU 使用预先归一化的 FP32 数据执行最大内积；CPU Oracle 使用原始 FP32 向量独立计算 FP64/FP32 Cosine。归一化耗时记录于环境元数据，**不包含在 GPU 搜索延迟中**。全库 Top-K 仅核查预定抽样查询，并非全部查询的严格排名证明。
+
+The fifth dataset adds GloVe-100-angular cosine search (1,183,514 × 100, 10,000 original queries). All ten workloads qualify under the stated sampled-oracle protocol. Public evidence includes 420 holdout observations and 80 numerical audit rows. GPU search uses offline FP32-normalized vectors; independent CPU FP64/FP32 oracles compute cosine from raw input vectors. Preprocessing is measured separately and excluded from reported GPU search times. Full-database rank checks cover sampled query rows only.

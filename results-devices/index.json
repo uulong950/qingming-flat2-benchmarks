@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "release": "v0.3.0",
+  "release": "v0.4.0",
   "devices": [
     {
       "id": "metax-c500",
@@ -50,6 +50,17 @@
           "performance": "results-devices/metax-c500/laion-clip-512-normalized/performance.csv",
           "numerical": "results-devices/metax-c500/laion-clip-512-normalized/numerical.csv",
           "samples": "results-devices/metax-c500/laion-clip-512-normalized/samples.csv"
+        },
+        {
+          "id": "glove-100-angular",
+          "name": "GloVe · 100 Angular",
+          "metric": "Cosine · max",
+          "n": 1183514,
+          "dimension": 100,
+          "queries": 10000,
+          "performance": "results-devices/metax-c500/glove-100-angular/performance.csv",
+          "numerical": "results-devices/metax-c500/glove-100-angular/numerical.csv",
+          "samples": "results-devices/metax-c500/glove-100-angular/samples.csv"
         }
       ]
     }
