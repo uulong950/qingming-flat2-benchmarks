@@ -21,7 +21,11 @@ qingming-flat2-benchmarks/
         │   ├── performance.csv
         │   ├── numerical.csv
         │   └── samples.csv
-        └── gist960/
+        ├── gist960/
+        │   ├── performance.csv
+        │   ├── numerical.csv
+        │   └── samples.csv
+        └── llama-128-ip/
             ├── performance.csv
             ├── numerical.csv
             └── samples.csv
@@ -31,12 +35,13 @@ qingming-flat2-benchmarks/
 
 | 数据集 / Dataset | Batch | K | 当前协议合格 / Qualified | 几何平均加速 / GM speedup | 最大加速 / Peak |
 |---|---|---|---:|---:|---:|
-| SIFT1M (1M × 128) | 1, 10, 100, 1000, 10000 | 1, 10 | 10 / 10 | 1.804× | 4.302× |
-| GIST960 (1M × 960) | 1, 10, 100, 1000 | 1, 10 | 8 / 8 | 1.294× | 1.768× |
+| SIFT1M (1,000,000 × 128 · L2²) | 1, 10, 100, 1000, 10000 | 1, 10 | 10 / 10 | 3.263× | 15.001× |
+| GIST960 (1,000,000 × 960 · L2²) | 1, 10, 100, 1000 | 1, 10 | 8 / 8 | 1.293× | 1.762× |
+| Llama-128-IP (256,921 × 128 · IP max) | 1, 10, 100, 1000 | 1, 10 | 8 / 8 | 2.547× | 8.781× |
 
-来自同一 MetaX C500 **25% 算力 sGPU 分区、16,000 MiB 显存配额**，并非整卡对照。测试用原始查询，无重复扩展；GIST960 最多 B=1000。
+来自同一 MetaX C500 **25% 算力 sGPU 分区、16,000 MiB 显存配额**，并非整卡对照。测试用原始查询，无重复扩展；GIST960 与 Llama-128-IP 最多 B=1000。Llama 采用最大内积排序，其数值分析核对 IP 分数而非 L2 距离。
 
-Measured on the same **25% compute MetaX C500 sGPU partition (16,000 MiB VRAM quota)**, **not** a full board. Original queries only; no synthetic query repetition.
+Measured on the same **25% compute MetaX C500 sGPU partition (16,000 MiB VRAM quota)**, **not** a full board. Original queries only; no synthetic query repetition. Llama uses maximum inner product (IP); it is not an L2 test.
 
 ## 公开文件含义 / Published data contract
 
@@ -47,7 +52,7 @@ Measured on the same **25% compute MetaX C500 sGPU partition (16,000 MiB VRAM qu
 
 ## 审查范围 / Audit scope
 
-CPU 全数据库 Top-K 验证只对预先固定的查询执行，不是所有查询的完整精确性证明。返回 ID 的 FP64/FP32 距离误差覆盖报告结果中的全部返回 ID。严格相等距离的边界并列是合法情况。QPS 按 Batch/P50 计算，属于批吞吐代理指标，并非长期持续服务 QPS；每轮 21 个样本的 P99 仅供描述。
+CPU 全数据库 Top-K 验证只对预先固定的查询执行，不是所有查询的完整精确性证明。返回 ID 的 FP64/FP32 距离或 IP 分数误差覆盖报告结果中的全部返回 ID。严格相等距离的边界并列是合法情况。QPS 按 Batch/P50 计算，属于批吞吐代理指标，并非长期持续服务 QPS；每轮 21 个样本的 P99 仅供描述。
 
 CPU Top-K oracle validation scans the full database for **preregistered query rows only**, not all queries. Distance error evaluation covers all IDs returned by both reported backends. Exact-distance ties are accepted. QPS is a batch/P50 proxy, not sustained service throughput; P99 from 21 observations is descriptive.
 
@@ -75,3 +80,8 @@ python3 -m http.server 8000
 **v0.1.2 · UI refinement / 版式调整**：矩阵、数值表格与环境字段统一左对齐；优化视觉层级、间距与窄屏交互。**所有 CSV/JSON 证据文件与 v0.1.1 字节完全一致**，没有新增 GPU 测量；`environment.json` 保留其原始证据发布标识。
 
 Matrix, numerical, and environment columns now share consistent left alignment. Responsive spacing and selection visibility are refined. All source evidence bytes remain unchanged from v0.1.1.
+
+
+**v0.2.0 · 三数据集结果合并 / Three datasets**：导入 2026-11-24 的 SIFT1M/GIST960 融合后正式确认结果及 Llama-128-IP 最大内积结果，合计 26 组通过当前审计范围的工作负载。仅发布确认轮次的对照原始采样；按当前数据集显示 Metric、Run ID 与来源归档哈希。
+
+SIFT1M and GIST960 use squared L2; Llama uses maximum inner product. All comparisons use same-session GPU events and independently audited CPU FP64/FP32 references. Only final confirmation-round observations are public. Internal tuning configurations and kernel source remain private.

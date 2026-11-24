@@ -1,10 +1,10 @@
 {
   "schema_version": "1.0",
-  "release": "v0.1.0",
+  "release": "v0.2.0",
   "devices": [
     {
       "id": "metax-c500",
-      "name": "MetaX C500 · sGPU 25%",
+      "name": "MetaX C500 · verify sGPU quota in environment",
       "environment": "results-devices/metax-c500/environment.json",
       "datasets": [
         {
@@ -28,6 +28,17 @@
           "performance": "results-devices/metax-c500/gist960/performance.csv",
           "numerical": "results-devices/metax-c500/gist960/numerical.csv",
           "samples": "results-devices/metax-c500/gist960/samples.csv"
+        },
+        {
+          "id": "llama-128-ip",
+          "name": "Llama · Attention 128",
+          "metric": "IP · max",
+          "n": 256921,
+          "dimension": 128,
+          "queries": 1000,
+          "performance": "results-devices/metax-c500/llama-128-ip/performance.csv",
+          "numerical": "results-devices/metax-c500/llama-128-ip/numerical.csv",
+          "samples": "results-devices/metax-c500/llama-128-ip/samples.csv"
         }
       ]
     }

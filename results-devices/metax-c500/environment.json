@@ -1,9 +1,8 @@
 {
-  "schema_version": "1.0",
-  "release": "v0.1.0",
-  "run_id": "qingming_c500_matrix_20261124T004646Z",
-  "captured_utc": "2026-11-24T00:46:46.863900+00:00",
-  "completed_utc": "20261124T012121Z",
+  "schema_version": "1.1",
+  "run_id": "MULTIPLE_DATASETS_SEE_DATASET_RUN_IDS",
+  "captured_utc": "2026-11-24T02:50:26.060030+00:00",
+  "completed_utc": "20261124T032630Z",
   "device": {
     "manufacturer": "MetaX",
     "model": "C500",
@@ -19,115 +18,50 @@
   "environment": {
     "os": "Ubuntu 24.04.1 LTS",
     "kernel": "5.15.0-58-generic",
-    "python": "3.10.10 (conda-forge)",
-    "compiler": "mxcc 1.0.0 (de3b0e5687) via cucc",
+    "python": "3.10.10",
+    "compiler": "mxcc version 1.0.0 (de3b0e5687) via cucc",
     "maca_version": "3.3.0.15",
     "kernel_mode_driver": "3.8.30",
     "mx_smi_version": "2.2.9",
-    "gcc_version": "13.3.0",
-    "glibc": "2.39",
+    "gcc_version": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0",
+    "glibc": "ldd (Ubuntu GLIBC 2.39-0ubuntu8.6) 2.39",
     "numpy": "1.26.4",
     "h5py": "3.16.0",
-    "host_cpu_report": "Virtualized / inconsistent identity and topology; physical CPU model not independently verified"
+    "host_cpu_report": "Captured in private run; physical CPU topology not asserted"
   },
+  "release": "qingming-flat2-benchmarks v0.2.0",
   "benchmark": {
-    "name": "QINGMING_C500_MATRIX_V1_2_V1_1_COMPATIBLE",
-    "metric": "L2 squared (lower is better)",
+    "metric": "PER_DATASET_SEE_DATASETS_AND_RESULTS",
     "timing_scope": "DEVICE_RESIDENT_GPU_EVENT_SEARCH_ONLY; index/query resident; excludes H2D, D2H, index build",
     "qps_definition": "QPS = 1000 * batch / GPU P50 (ms); batch-throughput proxy, not sustained service QPS",
     "rounds": 3,
     "repeats_per_round": 21,
     "warmup": 3,
-    "tuning_rounds": [
-      1,
-      2
-    ],
     "independent_holdout_round": 3,
-    "selection": "Correctness and full-batch parity gates; candidate improves >=1% vs baseline in each tuning round; select max qualified QPS",
     "oracles": [
       "CPU FP64 full database scan for preregistered query IDs",
       "CPU FP32 full database scan for preregistered query IDs"
     ],
     "oracle_coverage": "SAMPLED_QUERY_ROWS_ONLY (not all-query full-search proof)",
-    "return_distance_coverage": "ALL_RETURNED_IDS_ALL_QUERY_ROWS for holdout winner and mcFaiss",
-    "tie_policy": "Exact CPU distance ties accepted as valid alternate boundary IDs",
+    "return_distance_coverage": "ALL_RETURNED_IDS_ALL_QUERY_ROWS for final reported Qingming / mcFaiss; L2 distances or IP scores as appropriate",
+    "tie_policy": "Exact CPU L2 distance ties or IP score ties accepted as valid alternate boundary IDs",
     "rank_tolerance": "ZERO for membership; output distance tolerance separate",
     "abs_tolerance": 0.001,
     "rel_tolerance": 0.0001,
-    "precision_note": "Both backends FP32 storage. Qingming source config SGEMM FP32; instruction-level internal math is unverified for both.",
-    "expected_workloads": 18,
-    "qualified_workloads": 18,
-    "samples_count": 10206,
-    "gpu_case_count": 486,
-    "statistical_note": "P99 based on 21 observations per round; descriptive only"
-  },
-  "datasets": {
-    "sift1m": {
-      "n": 1000000,
-      "d": 128,
-      "nq": 10000,
-      "gt_k": 100,
-      "size_bytes": 525120040,
-      "sha256": "7c9940ce695123833f130e6f661543bb240d6639d4f6989f7a69c3ca62473e5c",
-      "query_policy": "ORIGINAL_ROWS_ONLY_NO_REPEAT_NO_SYNTHETIC_QUERIES",
-      "metric": "l2_squared",
-      "csv_sha256": {
-        "performance.csv": "9e506194f15befadffd1cb3c89b950c0a2dae070c610b47e86b1dc995f3fd685",
-        "numerical.csv": "7875c32ac6d8ffaee386db68e9b276d0a627b9b52d75e0210f0cc5f66ed738d4",
-        "samples.csv": "fc32b9d406404aa0f7c907144d454665d2cba43fe46182e99dcb2187da93d67d"
-      }
-    },
-    "gist960": {
-      "n": 1000000,
-      "d": 960,
-      "nq": 1000,
-      "gt_k": 100,
-      "size_bytes": 3844640040,
-      "sha256": "03c8a1d7fb6282f64249f6050e0f5a38571ac88d6fcecb4b597107dc571ff91d",
-      "query_policy": "ORIGINAL_ROWS_ONLY_NO_REPEAT_NO_SYNTHETIC_QUERIES",
-      "metric": "l2_squared",
-      "csv_sha256": {
-        "performance.csv": "30be2f79b35dc8a059c309972c0bdd5e7dba5e31edbb84e8cbbfc22fe1be7439",
-        "numerical.csv": "4f2435ca2774600542b37e85178c411408a7cfe54309cbfa7c5a420e22691440",
-        "samples.csv": "0b73dba784a5d6d5fb6625bd3cd91ddbcd144b911f3021fa2360c71820591287"
-      }
-    }
+    "precision_note": "FP32 source data. Internal device kernel implementation details are not disclosed; FP64/FP32 CPU oracles are independently calculated.",
+    "expected_workloads": 26,
+    "qualified_workloads": 26,
+    "statistical_note": "P99 based on finite round samples; descriptive only",
+    "evaluation_note": "Two selection rounds plus independent confirmation, numerically qualified before QPS selection.",
+    "public_sample_scope": "HOLDOUT_SELECTED_QINGMING_AND_SAME_SESSION_MCFAISS_ONLY",
+    "public_samples_count": 1092,
+    "device_environment_note": "The hardware/software fields describe the same C500 partition measured in both runs. Run-specific identity and source hashes are stored under datasets.<id>."
   },
   "provenance": {
-    "source_archive_sha256": "11187230d61c55f950f575942b8ecd2eeb65c2976ea106fbd25bf90ec0b602b7",
-    "source_archive_filename": "qingming_c500_matrix_20261124T004646Z.tar.gz",
-    "qingming_source_sha256": {
-      "src/stream_topk.cu": "3d9da2004784afc0721397bb2a7b9bf28df957102d324bd91d05913a3cb17ab1",
-      "src/common.hpp": "33279f971e96f19b79756d34f538558d258bb7b9e04ef4450e152495d137152e",
-      "vendor/mcfaiss_bench.cpp": "2f707d344f459d74820108b687e70fd2457f476627a44484fa45f583f1b9918a",
-      "vendor/common.hpp": "7d430b94035a9dd8dc075b7129de79d1db31f5388afba1f961aaa140e360b2df",
-      "matrix/runner.py": "cf53dedf19594572f3dda29e05fc0f1ef1490ed8a8ac83ba222ec57057955a07",
-      "matrix/audit.py": "0369adc5741399952289ed813fa7cd66c1c12df8452e12a10b70a5cdeab1df5b",
-      "build_c500.sh": "fc7f0e1f244d8f2142a4343c9e0c8cd49de6ec18c3d054d7d2bc58d4e896b495",
-      "vendor/build_wrapper.sh": "fe2f41345944aba5129ef4421dfb8fef081b031494b350c4c964052385343498",
-      "run_matrix.sh": "de044767893c4dc98283963c77766f8dc1706c28f42d7e73d7fa7d13b46bc2ce"
-    },
-    "qingming_binary_sha256": {
-      "build/d128_s16_r0_e0": "796fdd1761f789bd2caf1f1f5bf041e8f545f749a0296d0c03e5ca7b1b0b723d",
-      "build/d128_s16_r0_e1": "f02bf61967ac4233008d369cee2fa21e124e847918eac2eb68378ded06e75c71",
-      "build/d128_s16_r32_e0": "0b468b17894628f02ebc35ab8b9b3c680dd119abf42f13e190b5c98d83e0f94b",
-      "build/d128_s16_r32_e1": "3446e3f1fcaba6847f6ce6b2bafc6220a0404a6532d6ac15624664f7dd60dc28",
-      "build/d128_s8_r0_e0": "babeb3a3f7f07eca5bff3b012d2630dacf6202da97f06535a66d82d619d33cb8",
-      "build/d128_s8_r0_e1": "6ceeac2c26dee74f846b3fd6e8fa0806f00bf8da239830f0ab9d5a3b74b934da",
-      "build/d128_s8_r32_e0": "7bb6265746ad1d0a0d1ed94387239af6f0346add8244880005f46668f33428d3",
-      "build/d128_s8_r32_e1": "6c6d8dc49b028c193622a58b26cbd6cdd35965eed1a2572a4cc60bb4e22ed8a4",
-      "build/d960_s16_r0_e0": "19667c9be59e7cf2487691ce280026d5bccdd399a1172ea8686ec01792ec590c",
-      "build/d960_s16_r0_e1": "8803378bb63a0d8181f937d7128b31ea929138ffec453b54c80658b17edd110b",
-      "build/d960_s16_r32_e0": "96e7f328987e32f434dc1840b85be94b5ca3db77a125bb93e0629271c5a8bba8",
-      "build/d960_s16_r32_e1": "bfa90a8223dfa1cedc8ded96456883e6c0f37087af8b83710d58f311add71af4",
-      "build/d960_s8_r0_e0": "6c551865f53865a1c49098e2fa6d371651a391b0cd7cfcc4e76b5530a8eb928d",
-      "build/d960_s8_r0_e1": "b96bca6f8312bf5b3b734ebbead45a59222ae98625af4d183917a7c0797cbd40",
-      "build/d960_s8_r32_e0": "084226b27fd53a3f83c2e9e63e31d0ca1c55911769f81c08a52afa43cc5302d8",
-      "build/d960_s8_r32_e1": "67889311dc50acb8b822299afaf294325631106084bb245c52a8cd828d45896f"
-    },
+    "source_archive_sha256": "PER_DATASET_SEE_DATASET_SOURCE_ARCHIVE_SHA256",
     "mcfaiss_git_commit": "de1bd6d5a044f1ee2bfc4bd80ec1af79007c7dcb",
     "mcfaiss_worktree_clean": false,
-    "mcfaiss_worktree_note": "Recorded modifications and untracked local build artifacts; exact linked library hashes provided.",
+    "mcfaiss_worktree_note": "See private run for dirty paths and build detail; library SHA256 exposed.",
     "mcfaiss_libraries": [
       {
         "filename": "libfaiss_gpu.a",
@@ -141,13 +75,77 @@
       }
     ]
   },
+  "datasets": {
+    "sift1m": {
+      "n": 1000000,
+      "d": 128,
+      "nq": 10000,
+      "gt_k": 100,
+      "size_bytes": 525120040,
+      "sha256": "7c9940ce695123833f130e6f661543bb240d6639d4f6989f7a69c3ca62473e5c",
+      "query_policy": "ORIGINAL_ROWS_ONLY_NO_REPETITION",
+      "metric": "l2_squared",
+      "csv_sha256": {
+        "performance.csv": "c5010ad859433e78cfc4366c9e6f28d55fd01ed14c9ee0122dd7078d814e8576",
+        "numerical.csv": "0056b7b83b6c8b0f61cf01937367e40de2ed5d540045ad037a5a75430edc8496",
+        "samples.csv": "608f003afb0fe3258647016cefe4f8a53fe2e019ade9cb5c1f277bac9c6dc6d3"
+      },
+      "run_id": "qingming_c500_matrix_20261124T025026Z",
+      "source_archive_sha256": "5cbc55f20b3526f2d8959ff68386a20b607c3e6e6bbbabb861e2e03cb3ff26d6",
+      "cpu_topk_coverage": "FULL_DATABASE_SAMPLED_QUERY_ROWS_ONLY",
+      "return_score_coverage": "ALL_RETURNED_IDS_HOLDOUT_ONLY",
+      "captured_utc": "2026-11-24T02:50:26.060030+00:00"
+    },
+    "gist960": {
+      "n": 1000000,
+      "d": 960,
+      "nq": 1000,
+      "gt_k": 100,
+      "size_bytes": 3844640040,
+      "sha256": "03c8a1d7fb6282f64249f6050e0f5a38571ac88d6fcecb4b597107dc571ff91d",
+      "query_policy": "ORIGINAL_ROWS_ONLY_NO_REPETITION",
+      "metric": "l2_squared",
+      "csv_sha256": {
+        "performance.csv": "e32e99d6ced47d2ca9bb590f60e7a41904395faac91d482a12d1c4a694f78c16",
+        "numerical.csv": "bf29cbf001c1be41398fc0a0e0a582ed6a21cb0c2c732045d19840cc96aea72a",
+        "samples.csv": "775e57c301c39c5acaaa73603bc2fee91a255b2326baf519ce68b9c2248f4e4b"
+      },
+      "run_id": "qingming_c500_matrix_20261124T025026Z",
+      "source_archive_sha256": "5cbc55f20b3526f2d8959ff68386a20b607c3e6e6bbbabb861e2e03cb3ff26d6",
+      "cpu_topk_coverage": "FULL_DATABASE_SAMPLED_QUERY_ROWS_ONLY",
+      "return_score_coverage": "ALL_RETURNED_IDS_HOLDOUT_ONLY",
+      "captured_utc": "2026-11-24T02:50:26.060030+00:00"
+    },
+    "llama-128-ip": {
+      "n": 256921,
+      "d": 128,
+      "nq": 1000,
+      "gt_k": 100,
+      "sha256": "6034260762197bd5db495729a97fa71896af301d882e7870f4f3343aa7d175df",
+      "metric": "inner_product_max",
+      "run_id": "qingming_llama128_ip_20261124T035519Z",
+      "original_hdf5_sha256": "43c6a366d1e7dfd9e331e712708a664f91f8dbda1928c9923ef730d6718a2f52",
+      "query_policy": "Original rows only, no repetitions",
+      "cpu_topk_coverage": "FULL_DATABASE_SAMPLED_QUERY_ROWS_ONLY",
+      "return_score_coverage": "ALL_RETURNED_IDS_HOLDOUT_ONLY",
+      "csv_sha256": {
+        "performance.csv": "82b4a823e8338508d69dd32ba78e6f5f324c4bb8a9cd47d4407608bd8e827955",
+        "numerical.csv": "11e8b02e805ca53ae0aa143ddaf4213bc19b156fa2032e098f02be192dfc38c4",
+        "samples.csv": "74ef9f9d6581788921aa8dd83aef8cc72d9562694928a5295dee1685f7336a9d"
+      },
+      "source_environment_ref": "Private run environment.json (not all fields are public)",
+      "source_archive_sha256": "63251c8ad3b6316b0027ee3c31154c6bf7e73c891e927dc8d6e70f303a6014e0",
+      "p90_note": "GPU P90 computed from 21 public holdout samples using linear interpolation, not present in original winners.csv",
+      "captured_utc": "2026-11-24T03:55:19.495786+00:00"
+    }
+  },
   "publication": {
     "status": "18_OF_18_QUALIFIED_UNDER_CURRENT_PROTOCOL",
     "limitations": [
-      "CPU Top-K oracle scanned the full database on only preregistered query rows",
-      "No source-level independent reproduction of Qingming kernel in this results-only repository",
-      "sGPU partition 25% compute and 16000MiB memory: not full C500 64GB compute",
-      "Does not include indexing and transfers; QPS is not sustained service throughput"
+      "CPU full-database Top-K oracle verifies only preregistered query rows",
+      "No independent reconstruction of unpublished Qingming kernel",
+      "Finite-sample P99 is descriptive",
+      "GPU exclusivity not claimed"
     ]
   }
 }
