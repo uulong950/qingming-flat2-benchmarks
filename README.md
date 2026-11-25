@@ -1,117 +1,84 @@
 # qingming-flat2-benchmarks
 
-**性能 · 正确性 · 数值精度 · 可复现性证据**  
+性能 · 正确性 · 数值精度 · 可复现性证据
+
 Performance · Correctness · Numerical Accuracy · Reproducibility Evidence
 
-Qingming Flat2 的公开基准数据。计算、调优与 GPU 内核保存在独立的 `qingming-flat2` 工程。本仓库只展示可比较的性能结果、CPU 数值审计、确认轮次的原始采样和实验环境，不公开任何 GPU 内核、内部配置名称或消融参数。
+[公开基准页面 / Benchmark dashboard](https://uulong950.github.io/qingming-flat2-benchmarks/) · v0.6.0
 
-Public benchmark evidence for Qingming Flat2. This repository contains benchmark results, CPU numerical audits, holdout observations, and environment metadata, **not** proprietary kernels, internal tuning configurations, or ablation traces.
+本仓库公开同设备、同数据集和同协议下的性能、CPU 数值审计、独立确认轮次原始采样与环境证据。计算内核和内部调优仍保存在独立工程，不公开。
 
-## 目录 / Layout
+Public evidence for within-device comparisons under a shared search contract. Proprietary kernels and tuning traces are not included.
+
+## 设备 / Devices
+
+| Device | Execution environment | Baselines | Datasets |
+|---|---|---|---:|
+| MetaX C500 | 25% compute sGPU · 16,000 MiB quota | mcFaiss | 6 |
+| AMD Radeon RX 7900 XTX 24GB | gfx1100 · Ubuntu desktop · ROCm 7.2.4 | hipVS, Faiss ROCm | 1 |
+
+## MetaX C500 · 既有结果 / Existing results
+
+既有 CSV、环境文件、数据集索引项原样保留。 / Existing evidence files and dataset entries are unchanged.
+
+C500 GloVe 使用离线 FP32 归一化，CPU Oracle 依据原始向量；DEEP10M 使用抽样全库 CPU Oracle，不声称具备官方 10M GT。C500 的原始 mcFaiss 构建来源、非干净工作区状态、数据集与数值协议见其环境文件。 / GloVe preprocessing and DEEP10M oracle scope are retained in the original environment evidence, including the mcFaiss worktree qualification.
+
+| Dataset | Qualified | GPU P50 GM speedup vs mcFaiss | Peak |
+|---|---:|---:|---:|
+| SIFT1M | 10/10 | 3.263× | 15.001× |
+| GIST960 | 8/8 | 1.293× | 1.762× |
+| Llama · Attention 128 | 8/8 | 2.547× | 8.781× |
+| LAION · CLIP 512 | 8/8 | 1.696× | 4.393× |
+| GloVe · 100 Angular | 10/10 | 3.173× | 16.073× |
+| DEEP10M · 96D | 10/10 | 4.158× | 24.235× |
+
+## AMD Radeon RX 7900 XTX · SIFT1M
+
+N=1,000,000 · D=128 · squared L2 · Q=10,000 · B=1/10/100/1000/10000 · K=1/10.
+
+| Batch | K | Qingming GPU P50 (ms) | hipVS (ms) | Faiss ROCm (ms) | vs hipVS | vs Faiss ROCm |
+|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 1 | 0.194 | 1.730 | 3.479 | 8.926× | 17.949× |
+| 1 | 10 | 0.306 | 1.200 | 4.645 | 3.915× | 15.157× |
+| 10 | 1 | 0.376 | 1.271 | 4.289 | 3.376× | 11.395× |
+| 10 | 10 | 0.852 | 1.596 | 4.619 | 1.872× | 5.420× |
+| 100 | 1 | 2.707 | 7.538 | 6.751 | 2.784× | 2.494× |
+| 100 | 10 | 2.150 | 7.732 | 5.047 | 3.597× | 2.348× |
+| 1000 | 1 | 13.872 | 74.133 | 20.164 | 5.344× | 1.454× |
+| 1000 | 10 | 11.148 | 78.903 | 21.393 | 7.078× | 1.919× |
+| 10000 | 1 | 163.434 | 528.165 | 212.151 | 3.232× | 1.298× |
+| 10000 | 10 | 86.772 | 583.193 | 210.517 | 6.721× | 2.426× |
+
+| Baseline | Leading GPU P50 shapes | Geometric mean | Minimum | Maximum |
+|---|---:|---:|---:|---:|
+| hipVS | 10/10 | 4.226× | 1.872× | 8.926× |
+| Faiss ROCm | 10/10 | 3.923× | 1.298× | 17.949× |
+
+公开 30 次确认调用、390 条采样、120 条数值记录。每种 CPU 精度检查 366,663 个返回距离以及 78 条抽样查询的全库 Top-K；两种验证范围不同。完整私有实验 110 次调用审计通过，9 个常驻引擎块无中断。
+
+Public R3 evidence: 30 invocations, 390 observations, 120 numerical rows; 366,663 returned-score checks and 78 sampled full-database Top-K query rows per precision, across all three engines. These are distinct coverage claims. Full private audit: 110 invocations, 9 resident blocks, uninterrupted.
+
+## 协议与证据边界 / Protocol and limitations
+
+- GPU Event: resident complete search, excluding preprocessing, indexing, H2D/D2H. API: synchronized search wall time, not end-to-end RPC. QPS is `1000 × B / GPU P50 ms`, not sustained service throughput.
+- AMD 使用原始 FP32 SIFT 数据，经全量整数域检查后允许无损内部表示；不使用近似量化。 / Lossless representation of verified integer-valued FP32 SIFT inputs is permitted; no approximate quantization.
+- CPU FP64/FP32 full-database ranking checks are sampled; exact distance boundary ties are allowed. Returned score checks cover all reported holdout IDs. Missing fields are not zero.
+- AMD holdout repeats: B=1/10/100/1000/10000 → 21/21/11/7/5. Tail quantiles are descriptive. C500 keeps its original per-dataset protocol.
+- AMD runs on a shared display/compute GPU; exclusive use and locked clocks are not claimed. C500 is partitioned. No cross-device ranking.
+- AMD Faiss/hipVS source commits were not recorded at run time. Executable hashes are recorded; dependency hashes observed after the run are disclosed separately. Do not infer exact source revisions from these hashes.
+- Public observations permit independent recomputation of latency statistics and inspection of audit summaries. Private kernels and full returned-ID arrays are not published; source-level reproduction and independent full numerical re-audit from this repository alone are not possible.
+
+## 数据结构 / Layout
 
 ```text
-qingming-flat2-benchmarks/
-├── README.md
-├── index.html
-└── results-devices/
-    ├── index.json
-    └── metax-c500/
-        ├── environment.json
-        ├── sift1m/
-        │   ├── performance.csv
-        │   ├── numerical.csv
-        │   └── samples.csv
-        ├── gist960/
-        │   ├── performance.csv
-        │   ├── numerical.csv
-        │   └── samples.csv
-        ├── llama-128-ip/
-        │   ├── performance.csv
-        │   ├── numerical.csv
-        │   └── samples.csv
-        ├── laion-clip-512-normalized/
-        │   ├── performance.csv
-        │   ├── numerical.csv
-        │   └── samples.csv
-        ├── glove-100-angular/
-        │   ├── performance.csv
-        │   ├── numerical.csv
-        │   └── samples.csv
-        └── deep10m/
-            ├── performance.csv
-            ├── numerical.csv
-            └── samples.csv
+results-devices/
+  index.json
+  metax-c500/
+    environment.json
+    <dataset>/{performance,numerical,samples}.csv
+  amd-rx7900xtx/
+    environment.json
+    sift1m/{performance,numerical,samples}.csv
 ```
 
-## 首批结果 / Initial measurements
-
-| 数据集 / Dataset | Batch | K | 当前协议合格 / Qualified | 几何平均加速 / GM speedup | 最大加速 / Peak |
-|---|---|---|---:|---:|---:|
-| SIFT1M (1,000,000 × 128 · L2²) | 1, 10, 100, 1000, 10000 | 1, 10 | 10 / 10 | 3.263× | 15.001× |
-| GIST960 (1,000,000 × 960 · L2²) | 1, 10, 100, 1000 | 1, 10 | 8 / 8 | 1.293× | 1.762× |
-| Llama-128-IP (256,921 × 128 · IP max) | 1, 10, 100, 1000 | 1, 10 | 8 / 8 | 2.547× | 8.781× |
-| LAION-CLIP-512 (1,000,448 × 512 · normalized · IP max) | 1, 10, 100, 1000 | 1, 10 | 8 / 8 | 1.696× | 4.393× |
-| GloVe-100-angular (1,183,514 × 100 · Cosine max) | 1, 10, 100, 1000, 10000 | 1, 10 | 10 / 10 | 3.173× | 16.073× |
-| DEEP10M (10,000,000 × 96 · L2²) | 1, 10, 100, 1000, 10000 | 1, 10 | 10 / 10 | 4.158× | 24.235× |
-
-来自同一 MetaX C500 **25% 算力 sGPU 分区、16,000 MiB 显存配额**，并非整卡对照。测试用原始查询，无重复扩展；GIST960 与 Llama-128-IP 最多 B=1000。Llama 和 LAION 采用最大内积排序，其数值分析核对 IP 分数而非 L2 距离。LAION 使用原始归一化向量，不重新归一化；本轮测量 IP 而不声称精确 Cosine。GloVe 使用离线 FP32 归一化向量进行 GPU 内积搜索，并以原始 FP32 向量的 FP64/FP32 Cosine 作为独立 CPU 参考，预处理时间不计入 GPU Resident Search。
-
-Measured on the same **25% compute MetaX C500 sGPU partition (16,000 MiB VRAM quota)**, **not** a full board. Original queries only; no synthetic query repetition. Llama and LAION use maximum inner product (IP), not L2. LAION source vectors are already normalized and are not renormalized; this benchmark measures IP rather than claiming exact cosine ranking. GloVe evaluates cosine similarity using offline FP32-normalized GPU inputs and independent raw-vector FP64/FP32 cosine CPU oracles; preprocessing is excluded from GPU resident search latency.
-
-## 公开文件含义 / Published data contract
-
-- **`performance.csv`**：每个 Batch/K 的两引擎独立确认轮次延迟、QPS、加速比、正确性状态。**无内部配置名称**。One row per workload; final holdout performance and qualification without internal configuration details.
-- **`numerical.csv`**：仅针对最终报告的 Qingming 和 mcFaiss，在独立确认轮次记录 FP64/FP32 的抽样查询全库 Top-K 验证及全返回 ID 距离误差。Separate sampled Top-K audits and all-returned-ID distance errors.
-- **`samples.csv`**：只包含报告所用确认轮次的原始 Qingming/mcFaiss GPU Event 与 Host API 测量，足以复算公开的 P50 和加速比；**不包含私人调优过程**。Only the two reported backends' holdout observations; no private tuning traces.
-- **`environment.json`**：实际硬件配额、软件版本、测量协议、数据集哈希及外部 mcFaiss 版本和构建库哈希。Device allocation, versions, protocol, dataset checksums, and linked mcFaiss hashes.
-
-## 审查范围 / Audit scope
-
-CPU 全数据库 Top-K 验证只对预先固定的查询执行，不是所有查询的完整精确性证明。返回 ID 的 FP64/FP32 距离、IP 或 Cosine 分数误差覆盖报告结果中的全部返回 ID。严格相等距离的边界并列是合法情况。QPS 按 Batch/P50 计算，属于批吞吐代理指标，并非长期持续服务 QPS；每轮 21 个样本的 P99 仅供描述。
-
-CPU Top-K oracle validation scans the full database for **preregistered query rows only**, not all queries. Distance/score error evaluation covers all IDs returned by both reported backends. Exact-distance ties are accepted. QPS is a batch/P50 proxy, not sustained service throughput; P99 from 21 observations is descriptive.
-
-因 GPU 内核未公开，第三方可以审计公开测量样本和数值检查结果，但无法独立从源码完整复现 Qingming 实验。公开文件中的完整性能统计与原测量记录一致；出于知识产权保护，私有调优轨迹不可作为公开证据审计。
-
-Source-level independent reproduction is not available without the private kernels. Published timing summaries can be recomputed from the final holdout samples; private tuning traces are not independently auditable from this repository.
-
-## 发布 / GitHub Pages
-
-仓库 Settings → Pages → Deploy from a branch → `main` / `(root)`。无需 Jekyll 主题。  
-Repository Settings → Pages → Deploy from a branch → `main` / `(root)`.
-
-本地预览 / Local preview:
-
-```bash
-python3 -m http.server 8000
-# open http://localhost:8000/
-```
-
-## 版本 / Version
-
-**v0.1.1** 仅修改公开数据边界和展示：中英双语极简界面、去除所有公开的内部配置/消融名称、确认轮次双引擎采样与数值记录；**未产生新的 GPU 实测数据**。Underlying source archive SHA-256 remains recorded in `environment.json`.
-
-
-**v0.1.2 · UI refinement / 版式调整**：矩阵、数值表格与环境字段统一左对齐；优化视觉层级、间距与窄屏交互。**所有 CSV/JSON 证据文件与 v0.1.1 字节完全一致**，没有新增 GPU 测量；`environment.json` 保留其原始证据发布标识。
-
-Matrix, numerical, and environment columns now share consistent left alignment. Responsive spacing and selection visibility are refined. All source evidence bytes remain unchanged from v0.1.1.
-
-
-**v0.2.0 · 三数据集结果合并 / Three datasets**：导入 2026-11-24 的 SIFT1M/GIST960 融合后正式确认结果及 Llama-128-IP 最大内积结果，合计 26 组通过当前审计范围的工作负载。仅发布确认轮次的对照原始采样；按当前数据集显示 Metric、Run ID 与来源归档哈希。
-
-SIFT1M and GIST960 use squared L2; Llama uses maximum inner product. All comparisons use same-session GPU events and independently audited CPU FP64/FP32 references. Only final confirmation-round observations are public. Internal tuning configurations and kernel source remain private.
-
-
-**v0.3.0 · LAION-CLIP-512 Normalized IP**：新增第四个真实数据集（1,000,448 × 512；1,000 条原始查询），8/8 组在当前协议下合格。独立确认轮次包含 336 条公开原始采样，FP64/FP32 审计 64 条。所有性能值可由确认轮次样本复算，数值审计范围仍是抽样查询全库 Top-K 与全部返回 ID 的 IP 分数，不是全部查询的严格排序证明。
-
-The fourth dataset is LAION-CLIP-512 (normalized source vectors, evaluated with maximum inner product). Eight workloads qualified under the stated protocol. Public evidence adds 336 holdout timing observations and 64 numerical audit records. CPU full-database rank verification covers selected queries only; returned-score checks cover all reported IDs.
-
-
-**v0.4.0 · GloVe-100-angular · Cosine**：新增第五个真实数据集（1,183,514 × 100，10,000 条原始查询），10/10 组按当前协议合格；独立确认轮次增加 420 条公开 GPU Event/API 原始采样与 80 条数值审计记录。GPU 使用预先归一化的 FP32 数据执行最大内积；CPU Oracle 使用原始 FP32 向量独立计算 FP64/FP32 Cosine。归一化耗时记录于环境元数据，**不包含在 GPU 搜索延迟中**。全库 Top-K 仅核查预定抽样查询，并非全部查询的严格排名证明。
-
-The fifth dataset adds GloVe-100-angular cosine search (1,183,514 × 100, 10,000 original queries). All ten workloads qualify under the stated sampled-oracle protocol. Public evidence includes 420 holdout observations and 80 numerical audit rows. GPU search uses offline FP32-normalized vectors; independent CPU FP64/FP32 oracles compute cosine from raw input vectors. Preprocessing is measured separately and excluded from reported GPU search times. Full-database rank checks cover sampled query rows only.
-
-
-**v0.5.0 · DEEP10M · 第一阶段 C500 收官 / Phase I C500 Final**：新增第六个数据集 DEEP10M（10,000,000 × 96；10,000 条原始查询；Squared L2），K=1/10，Batch 最大 10,000。10/10 工作负载按当前协议合格，最高加速比 24.235×、几何平均 4.158×。独立确认轮次新增 420 条公开采样和 80 条数值审计记录。数据没有适用的 10M 官方 Ground Truth（`GT_K=0`），因此仅对预定抽样查询执行完整 10M 数据库 CPU FP64/FP32 Top-K 扫描；返回的所有 ID 则核对距离分数。本次 GPU Resident Search 时间不计数据加载、建库及主机设备传输。结果是 C500 25% sGPU 的分区测试，不是整卡成绩。
-
-The sixth dataset is DEEP10M (10 million × 96, squared L2), with K=1/10 and batches up to 10,000. All 10 workloads qualify under the stated protocol; public holdout evidence adds 420 timing observations and 80 numerical audit rows. No suitable official 10M-subset GT was provided (GT_K=0), so independent CPU FP64/FP32 full-database Top-K checks cover preregistered query rows only; all reported returned-ID distances are audited. GPU resident timing excludes data loading, indexing, and host-device transfers. Results use a 25% compute MetaX C500 sGPU partition, not the full card.
+设备、数据集、测量口径和对照引擎均由页面动态选择。完整字段和 SHA256 参见各设备的公开环境文件。 / Select device, dataset, timing and baseline independently; see the environment files for hashes and full protocol details.

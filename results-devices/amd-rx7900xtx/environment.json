@@ -1,0 +1,404 @@
+{
+  "schema_version": "2.0",
+  "release": "v0.6.0",
+  "run_id": "paired_amd_gfx1100_v081_20261125T010656Z",
+  "device": {
+    "manufacturer": "AMD",
+    "model": "Radeon RX 7900 XTX",
+    "architecture": "gfx1100",
+    "board_memory_gb_nominal": 24,
+    "runtime_device_labels": [
+      "Radeon RX 7900 XTX"
+    ],
+    "execution_mode": "desktop / full board; no exclusive use claimed",
+    "actual_gpu_exclusivity": "NOT_CLAIMED",
+    "locked_clocks": "NOT_CLAIMED"
+  },
+  "environment": {
+    "os": "Ubuntu 24.04 (user reported)",
+    "host_cpu": "AMD Ryzen 9 9950X (user reported)",
+    "kernel": "7.0.0-43-generic",
+    "rocm_version": "7.2.4",
+    "compiler": "HIP version: 7.2.53211-97f5574fe2",
+    "architecture_override": false
+  },
+  "benchmark": {
+    "dataset": "SIFT1M",
+    "metric": "squared L2",
+    "n": 1000000,
+    "dimension": 128,
+    "query_count": 10000,
+    "query_set": "original [0:B], no repetition",
+    "rounds": 3,
+    "independent_holdout_round": 3,
+    "repeats_by_batch": {
+      "1": 21,
+      "10": 21,
+      "100": 11,
+      "1000": 7,
+      "10000": 5
+    },
+    "warmup": 2,
+    "timing_scope": "Device-resident complete search, including selection and synchronization; excludes loading, preprocessing, index build, H2D and result D2H. Host API is synchronized search wall time, not end-to-end RPC.",
+    "qps_definition": "1000 * batch / P50 ms; batch-throughput proxy",
+    "expected_workloads": 10,
+    "qualified_workloads": 10,
+    "private_audited_invocations": 110,
+    "resident_worker_blocks": 9,
+    "uninterrupted_dispatch": true,
+    "display_gate": false,
+    "public_holdout_invocations": 30,
+    "public_samples_count": 390,
+    "public_numerical_rows": 120,
+    "public_returned_scores_per_precision": 366663,
+    "public_sampled_query_rows_per_precision": 78,
+    "private_all_invocation_returned_scores_fp64": 1344431,
+    "private_all_invocation_sampled_query_rows": 286,
+    "oracle_coverage": "FP64/FP32 sampled full-database Top-K membership; exact boundary ties accepted; not exhaustive ranking proof",
+    "score_audit": "FP64 and FP32 all reported returned-ID distances; FP32 supplemental offline audit",
+    "precision_note": "Original FP32 inputs confirmed exactly representable as unsigned 8-bit integers; lossless internal representation permitted. No approximate quantization.",
+    "statistical_note": "P95/P99 are descriptive with finite adaptive observations",
+    "baseline_selection": "hipVS L2Expanded/L2Unexpanded selected per workload using R1/R2, held fixed for R3; Faiss GPU FlatL2 FP32; Qingming configuration locked before formal run",
+    "public_sample_scope": "R3 only; no tuning traces"
+  },
+  "provenance": {
+    "dataset_sha256": "7c9940ce695123833f130e6f661543bb240d6639d4f6989f7a69c3ca62473e5c",
+    "private_protocol_sha256": "87371c9ed3b1f64fd07ab3fe8487402e0a07350c08b41f82529d1222ab25c5f7",
+    "binary_sha256": {
+      "hipvs": "363bbfb2ba5491cb9334724f4db6e061e2bed6ded27aeadc0b8666aa9760f9e3",
+      "faiss_rocm": "88ea5b4f6d5f9f74301819029cc87a972f8a1f16df5c66ce9d909601b2fa93d0",
+      "qingming": "fe9289a555959f983d22c50f2e6d8fc5c07cc3569faf3323071a2d1de289bd90"
+    },
+    "faiss_git_commit_recorded_at_run": null,
+    "hipvs_git_commit_recorded_at_run": null,
+    "linked_libraries_observed_after_run": {
+      "hipvs": [
+        {
+          "filename": "libcuvs.so",
+          "sha256_observed_after_run": "b69f8666c3b2444947b98b1ac641c7c1450357ef5545f4be1a02dd5553bd2246"
+        },
+        {
+          "filename": "librmm.so",
+          "sha256_observed_after_run": "34b070e0473215e7df218ac20e822fbe1a22959baf49272c4bf51b870e447a92"
+        },
+        {
+          "filename": "librapids_logger.so",
+          "sha256_observed_after_run": "1e35471b245c5efe61395341c4b8f973fb19dc53637d088441c7b21ed91ddcf1"
+        },
+        {
+          "filename": "libamdhip64.so.7",
+          "sha256_observed_after_run": "f1043337461c8e54ee135e95fa979a7d0e4344676ad5b0554652f844f8f098ac"
+        },
+        {
+          "filename": "libhipblas.so.3",
+          "sha256_observed_after_run": "4d256f7897b50ababe69cf704d687da655ae23e608cb72333a4df1cd93668e3e"
+        },
+        {
+          "filename": "libhipsolver.so.1",
+          "sha256_observed_after_run": "0a70dedd7f530c58ea3274c91c1521ce3f7b737bb5a0e92ca22d9310dd15cba1"
+        },
+        {
+          "filename": "libhipsparse.so.4",
+          "sha256_observed_after_run": "6db9914e2f146a896fd1e3b43eccc48e0218081e8b670d74eb737aee1b6a273f"
+        },
+        {
+          "filename": "libhiprand.so.1",
+          "sha256_observed_after_run": "de0f0d5cca649b9ce539b210c4004ce7c51547256df66a3af941c2db8d03d758"
+        },
+        {
+          "filename": "libhipblaslt.so.1",
+          "sha256_observed_after_run": "4c89a592944beafe388d21cd491c654820baba3d0c12d35fb8fe7020722bb950"
+        },
+        {
+          "filename": "libblas.so.3",
+          "sha256_observed_after_run": "e748efcae5753fe4a652877fccdb5895ac6f7605668a2db878b19c914e78e3a8"
+        },
+        {
+          "filename": "liblapack.so.3",
+          "sha256_observed_after_run": "851bb1fc5833ede9ed704b4417a251a899976d5e0915de40452615187a65278f"
+        },
+        {
+          "filename": "libstdc++.so.6",
+          "sha256_observed_after_run": "9ac7e2ec283e4a4a9a1ffdf0a17d688ca90e7f9d020cb8f372af7fa5194618f0"
+        },
+        {
+          "filename": "libm.so.6",
+          "sha256_observed_after_run": "5dcc4d25466e29ca390ed6fabb371c69b65dff6fa4e91c34561057a020d6994a"
+        },
+        {
+          "filename": "libomp.so",
+          "sha256_observed_after_run": "874e24cdfe2c07b8d9bde7f2723983b7d0123917f10697204d6f77d4ba9e1055"
+        },
+        {
+          "filename": "libgcc_s.so.1",
+          "sha256_observed_after_run": "bbc0c0723c4ae25324adced7fa6ae6804ddf028fb72c5895312fc3cdba901b2d"
+        },
+        {
+          "filename": "libc.so.6",
+          "sha256_observed_after_run": "755a371e86cc9f564ab54f66140747700fb0a103f698f659f2060f707897e09a"
+        },
+        {
+          "filename": "librccl.so.1",
+          "sha256_observed_after_run": "53149bc0a64faa580876b0f6b745ebfc02c4371be4e2a24daf90c23782ed96d3"
+        },
+        {
+          "filename": "ld-linux-x86-64.so.2",
+          "sha256_observed_after_run": "5fc0940888e9d2e1a00e66d6b1a559c36364ee867683652e1074fa576952cc3f"
+        },
+        {
+          "filename": "librocprofiler-register.so.0",
+          "sha256_observed_after_run": "1a23a2b5a62dc7feee9259b9a307bca94caef7cfbaebc7b1b20a0289ed7e69f0"
+        },
+        {
+          "filename": "libhsa-runtime64.so.1",
+          "sha256_observed_after_run": "b8cdfe93d343649a35c1daf73a0a3a6840f09379ebeee9be65670461ffea43f4"
+        },
+        {
+          "filename": "librocsolver.so.0",
+          "sha256_observed_after_run": "af4590ee6a03507d2264b20055f06a1304bbcb3a87c8193fe71e2fb27aacfafc"
+        },
+        {
+          "filename": "librocblas.so.5",
+          "sha256_observed_after_run": "3f0e5b227d6cf340ac94b08c3061429064f58e18ef62c883bbb543248e1e814b"
+        },
+        {
+          "filename": "librocsparse.so.1",
+          "sha256_observed_after_run": "395af4a691e9ec48814e36e7dd0bf1fb3cada6b0e675581c0c870d0335ce0adf"
+        },
+        {
+          "filename": "librocrand.so.1",
+          "sha256_observed_after_run": "d9afcfe3145060e453ae2e5d970b5259c529dc1fdc81f62a652e100a97fa831f"
+        },
+        {
+          "filename": "libroctx64.so.4",
+          "sha256_observed_after_run": "22bbc6946fdf5d7d8b1755cbd738c42a63f3795d18ac3ed1285b09cc772dee17"
+        },
+        {
+          "filename": "librocroller.so.1",
+          "sha256_observed_after_run": "cbbd056b2ebb0581a1ded7af6f798767716ff5b6af0eac30bf714975a77151bf"
+        },
+        {
+          "filename": "libgfortran.so.5",
+          "sha256_observed_after_run": "342618ccfebe840446e4ef2b7893f4161b2084845e570f42d68a70bfde58a58d"
+        },
+        {
+          "filename": "libdl.so.2",
+          "sha256_observed_after_run": "4dbcca3c01ca84d092b5b7b2610f5835b55fc70a0288dd9d766b40ac9386e2d9"
+        },
+        {
+          "filename": "librocm_smi64.so.1",
+          "sha256_observed_after_run": "cca245677e869de87b11b3f4c0358be63c60190f26a0821ed06f6801764125a5"
+        },
+        {
+          "filename": "libelf.so.1",
+          "sha256_observed_after_run": "248c989360783cdc52f3659921de852c2efcc2097253ce58e34443f856412814"
+        },
+        {
+          "filename": "libdrm.so.2",
+          "sha256_observed_after_run": "3666067992714d60452faebefbb78ebf8b6bafeb38de394b7ac9dc2a67b64b54"
+        },
+        {
+          "filename": "libdrm_amdgpu.so.1",
+          "sha256_observed_after_run": "f9a734ec7bd7594a4660c387e8e4393b2a509d563cdd06e83e0d13a6c1b0b112"
+        },
+        {
+          "filename": "libnuma.so.1",
+          "sha256_observed_after_run": "02d7582c5d391e460e56aa67a414360e3183b968206645b9123f9dc7bff5d009"
+        },
+        {
+          "filename": "libamd_comgr.so.3",
+          "sha256_observed_after_run": "f893a0e750947d11c5ee8d77c7ae6de80d5c04b4f4c31ba3ff4d2df6de4bff79"
+        },
+        {
+          "filename": "libz.so.1",
+          "sha256_observed_after_run": "f61677c7bdb7c2aa2a243ea781bfd16afcb361cede7b4ef76127a9d8eb9a5242"
+        },
+        {
+          "filename": "libzstd.so.1",
+          "sha256_observed_after_run": "0a2128bc10841fb29e76d08d945864dfb0b6a66da5df6df5d8299197439e54bb"
+        }
+      ],
+      "faiss_rocm": [
+        {
+          "filename": "libomp.so",
+          "sha256_observed_after_run": "874e24cdfe2c07b8d9bde7f2723983b7d0123917f10697204d6f77d4ba9e1055"
+        },
+        {
+          "filename": "libblas.so.3",
+          "sha256_observed_after_run": "e748efcae5753fe4a652877fccdb5895ac6f7605668a2db878b19c914e78e3a8"
+        },
+        {
+          "filename": "liblapack.so.3",
+          "sha256_observed_after_run": "851bb1fc5833ede9ed704b4417a251a899976d5e0915de40452615187a65278f"
+        },
+        {
+          "filename": "libhipblas.so.3",
+          "sha256_observed_after_run": "4d256f7897b50ababe69cf704d687da655ae23e608cb72333a4df1cd93668e3e"
+        },
+        {
+          "filename": "libamdhip64.so.7",
+          "sha256_observed_after_run": "f1043337461c8e54ee135e95fa979a7d0e4344676ad5b0554652f844f8f098ac"
+        },
+        {
+          "filename": "libstdc++.so.6",
+          "sha256_observed_after_run": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+        },
+        {
+          "filename": "libm.so.6",
+          "sha256_observed_after_run": "5dcc4d25466e29ca390ed6fabb371c69b65dff6fa4e91c34561057a020d6994a"
+        },
+        {
+          "filename": "libgcc_s.so.1",
+          "sha256_observed_after_run": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb"
+        },
+        {
+          "filename": "libc.so.6",
+          "sha256_observed_after_run": "755a371e86cc9f564ab54f66140747700fb0a103f698f659f2060f707897e09a"
+        },
+        {
+          "filename": "ld-linux-x86-64.so.2",
+          "sha256_observed_after_run": "5fc0940888e9d2e1a00e66d6b1a559c36364ee867683652e1074fa576952cc3f"
+        },
+        {
+          "filename": "libgfortran.so.5",
+          "sha256_observed_after_run": "342618ccfebe840446e4ef2b7893f4161b2084845e570f42d68a70bfde58a58d"
+        },
+        {
+          "filename": "librocsolver.so.0",
+          "sha256_observed_after_run": "af4590ee6a03507d2264b20055f06a1304bbcb3a87c8193fe71e2fb27aacfafc"
+        },
+        {
+          "filename": "librocblas.so.5",
+          "sha256_observed_after_run": "3f0e5b227d6cf340ac94b08c3061429064f58e18ef62c883bbb543248e1e814b"
+        },
+        {
+          "filename": "librocprofiler-register.so.0",
+          "sha256_observed_after_run": "1a23a2b5a62dc7feee9259b9a307bca94caef7cfbaebc7b1b20a0289ed7e69f0"
+        },
+        {
+          "filename": "libhsa-runtime64.so.1",
+          "sha256_observed_after_run": "b8cdfe93d343649a35c1daf73a0a3a6840f09379ebeee9be65670461ffea43f4"
+        },
+        {
+          "filename": "libhipblaslt.so.1",
+          "sha256_observed_after_run": "4c89a592944beafe388d21cd491c654820baba3d0c12d35fb8fe7020722bb950"
+        },
+        {
+          "filename": "libelf.so.1",
+          "sha256_observed_after_run": "248c989360783cdc52f3659921de852c2efcc2097253ce58e34443f856412814"
+        },
+        {
+          "filename": "libdrm.so.2",
+          "sha256_observed_after_run": "3666067992714d60452faebefbb78ebf8b6bafeb38de394b7ac9dc2a67b64b54"
+        },
+        {
+          "filename": "libdrm_amdgpu.so.1",
+          "sha256_observed_after_run": "f9a734ec7bd7594a4660c387e8e4393b2a509d563cdd06e83e0d13a6c1b0b112"
+        },
+        {
+          "filename": "libnuma.so.1",
+          "sha256_observed_after_run": "02d7582c5d391e460e56aa67a414360e3183b968206645b9123f9dc7bff5d009"
+        },
+        {
+          "filename": "libroctx64.so.4",
+          "sha256_observed_after_run": "22bbc6946fdf5d7d8b1755cbd738c42a63f3795d18ac3ed1285b09cc772dee17"
+        },
+        {
+          "filename": "librocroller.so.1",
+          "sha256_observed_after_run": "cbbd056b2ebb0581a1ded7af6f798767716ff5b6af0eac30bf714975a77151bf"
+        },
+        {
+          "filename": "libz.so.1",
+          "sha256_observed_after_run": "f61677c7bdb7c2aa2a243ea781bfd16afcb361cede7b4ef76127a9d8eb9a5242"
+        },
+        {
+          "filename": "libzstd.so.1",
+          "sha256_observed_after_run": "0a2128bc10841fb29e76d08d945864dfb0b6a66da5df6df5d8299197439e54bb"
+        },
+        {
+          "filename": "libamd_comgr.so.3",
+          "sha256_observed_after_run": "f893a0e750947d11c5ee8d77c7ae6de80d5c04b4f4c31ba3ff4d2df6de4bff79"
+        }
+      ],
+      "qingming": [
+        {
+          "filename": "libamdhip64.so.7",
+          "sha256_observed_after_run": "f1043337461c8e54ee135e95fa979a7d0e4344676ad5b0554652f844f8f098ac"
+        },
+        {
+          "filename": "libstdc++.so.6",
+          "sha256_observed_after_run": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+        },
+        {
+          "filename": "libm.so.6",
+          "sha256_observed_after_run": "5dcc4d25466e29ca390ed6fabb371c69b65dff6fa4e91c34561057a020d6994a"
+        },
+        {
+          "filename": "libgcc_s.so.1",
+          "sha256_observed_after_run": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb"
+        },
+        {
+          "filename": "libc.so.6",
+          "sha256_observed_after_run": "755a371e86cc9f564ab54f66140747700fb0a103f698f659f2060f707897e09a"
+        },
+        {
+          "filename": "librocprofiler-register.so.0",
+          "sha256_observed_after_run": "1a23a2b5a62dc7feee9259b9a307bca94caef7cfbaebc7b1b20a0289ed7e69f0"
+        },
+        {
+          "filename": "libhsa-runtime64.so.1",
+          "sha256_observed_after_run": "b8cdfe93d343649a35c1daf73a0a3a6840f09379ebeee9be65670461ffea43f4"
+        },
+        {
+          "filename": "ld-linux-x86-64.so.2",
+          "sha256_observed_after_run": "5fc0940888e9d2e1a00e66d6b1a559c36364ee867683652e1074fa576952cc3f"
+        },
+        {
+          "filename": "libelf.so.1",
+          "sha256_observed_after_run": "248c989360783cdc52f3659921de852c2efcc2097253ce58e34443f856412814"
+        },
+        {
+          "filename": "libdrm.so.2",
+          "sha256_observed_after_run": "3666067992714d60452faebefbb78ebf8b6bafeb38de394b7ac9dc2a67b64b54"
+        },
+        {
+          "filename": "libdrm_amdgpu.so.1",
+          "sha256_observed_after_run": "f9a734ec7bd7594a4660c387e8e4393b2a509d563cdd06e83e0d13a6c1b0b112"
+        },
+        {
+          "filename": "libnuma.so.1",
+          "sha256_observed_after_run": "02d7582c5d391e460e56aa67a414360e3183b968206645b9123f9dc7bff5d009"
+        },
+        {
+          "filename": "libz.so.1",
+          "sha256_observed_after_run": "f61677c7bdb7c2aa2a243ea781bfd16afcb361cede7b4ef76127a9d8eb9a5242"
+        },
+        {
+          "filename": "libzstd.so.1",
+          "sha256_observed_after_run": "0a2128bc10841fb29e76d08d945864dfb0b6a66da5df6df5d8299197439e54bb"
+        }
+      ]
+    },
+    "library_hash_note": "Post-run observation of paths recorded at run time; not a contemporaneous library-content attestation.",
+    "publication_review": "PUBLIC_EXPORT_CONSISTENCY_CHECKED; BASELINE_SOURCE_COMMITS_NOT_RECORDED_AT_RUN; POST_RUN_LIBRARY_HASHES_DISCLOSED",
+    "source_level_reproduction": "Unavailable for private Qingming kernels; public samples support recomputation of statistics.",
+    "public_candidate_zip_sha256": "3123652ddd6fa1d5b361065e05578019e9ad85ffe88114443aa8f5b8d06e12c4"
+  },
+  "datasets": [
+    {
+      "id": "sift1m",
+      "name": "SIFT1M",
+      "metric": "L2 squared",
+      "n": 1000000,
+      "dimension": 128,
+      "queries": 10000,
+      "run_id": "paired_amd_gfx1100_v081_20261125T010656Z",
+      "csv_sha256": {
+        "samples.csv": "d7c65927af16fa59a47193c4c4d74a765a846154b58051d713d5657e16c26c40",
+        "performance.csv": "d1f9ee3b9397ebc48be55e013537f5d164b0a43b04236f00d6523b300ff6281f",
+        "numerical.csv": "3d1e087a90d3a1ce0e63e416a4d0f1915a21769cfa695898a423f0342d5a5dd2"
+      },
+      "sha256": "7c9940ce695123833f130e6f661543bb240d6639d4f6989f7a69c3ca62473e5c"
+    }
+  ]
+}
