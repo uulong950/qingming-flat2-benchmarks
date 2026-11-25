@@ -4,7 +4,7 @@
 
 Performance · Correctness · Numerical Accuracy · Reproducibility Evidence
 
-[公开基准页面 / Benchmark dashboard](https://uulong950.github.io/qingming-flat2-benchmarks/) · v0.7.0
+[公开基准页面 / Benchmark dashboard](https://uulong950.github.io/qingming-flat2-benchmarks/) · v0.8.0
 
 本仓库公开同设备、同数据集和同协议下的性能、CPU 数值审计、独立确认轮次原始采样与环境证据。计算内核和内部调优仍保存在独立工程，不公开。
 
@@ -15,7 +15,7 @@ Public evidence for within-device comparisons under a shared search contract. Pr
 | Device | Execution environment | Baselines | Datasets |
 |---|---|---|---:|
 | MetaX C500 | 25% compute sGPU · 16,000 MiB quota | mcFaiss | 6 |
-| AMD Radeon RX 7900 XTX 24GB | gfx1100 · Ubuntu desktop · ROCm 7.2.4 | hipVS, Faiss ROCm | 2 |
+| AMD Radeon RX 7900 XTX 24GB | gfx1100 · Ubuntu desktop · ROCm 7.2.4 | hipVS, Faiss ROCm | 3 |
 
 ## MetaX C500 · 既有结果 / Existing results
 
@@ -80,6 +80,7 @@ results-devices/
     environment.json
     sift1m/{performance,numerical,samples}.csv
     gist960/{environment.json,performance.csv,numerical.csv,samples.csv}
+    llama-128-ip/{environment.json,performance.csv,numerical.csv,samples.csv}
 ```
 
 设备、数据集、测量口径和对照引擎均由页面动态选择。完整字段和 SHA256 参见各设备的公开环境文件。 / Select device, dataset, timing and baseline independently; see the environment files for hashes and full protocol details.
@@ -121,3 +122,29 @@ GIST960 基线源码 commit 未记录；运行前采集并复核部分依赖库�
 GIST960 baseline source commits are unknown. Selected runtime library and executable hashes were captured at run start and rechecked, not complete build provenance. No formal GPU floating-point certificate or source-level independent reproduction is claimed. Exclusive GPU use and locked clocks are not claimed.
 
 [Performance](results-devices/amd-rx7900xtx/gist960/performance.csv) · [Numerical](results-devices/amd-rx7900xtx/gist960/numerical.csv) · [Samples](results-devices/amd-rx7900xtx/gist960/samples.csv) · [Environment](results-devices/amd-rx7900xtx/gist960/environment.json)
+
+## Llama-128-IP · AMD RX 7900 XTX / v0.8.0
+
+N=256,921 · D=128 · IP max · Q=1,000 · B=1/10/100/1000 · K=1/10.
+
+| B | K | Qingming GPU P50 ms | hipVS ms | Faiss ROCm ms | vs hipVS | vs Faiss ROCm |
+|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 1 | 0.1996 | 0.6380 | 1.2028 | 3.197× | 6.027× |
+| 1 | 10 | 0.3285 | 0.6658 | 1.2599 | 2.027× | 3.835× |
+| 10 | 1 | 0.3662 | 0.7098 | 1.1941 | 1.938× | 3.261× |
+| 10 | 10 | 0.4650 | 0.7177 | 1.0467 | 1.544× | 2.251× |
+| 100 | 1 | 0.6592 | 3.2708 | 1.1975 | 4.962× | 1.817× |
+| 100 | 10 | 0.6411 | 3.2739 | 1.2690 | 5.107× | 1.979× |
+| 1000 | 1 | 3.6555 | 17.3801 | 4.2203 | 4.754× | 1.154× |
+| 1000 | 10 | 3.7772 | 17.4472 | 4.3681 | 4.619× | 1.156× |
+
+GPU P50：两套基线各 8/8 领先；几何平均加速 3.192× / 2.311×，最低 1.544× / 1.154×（hipVS / Faiss ROCm）。API P50 同样各 8/8 领先。
+GPU P50: 8/8 leading against each baseline; geometric mean 3.192× / 2.311×, minimum 1.544× / 1.154× (hipVS / Faiss ROCm). API P50 also leads in 8/8 shapes against each.
+
+公开 R3：24 次调用、312 对计时样本、96 条审计记录；每种精度共 36,663 个返回分数和 162 次抽样全库查询检查。私有三轮环境摘要报告 72 次调用、48/48 性能门槛通过。公开文件一致性已复核，未独立复算私有轮次或原始 ID/分数数组。
+Public R3: 24 invocations, 312 timing pairs, 96 audit records; 36,663 returned scores and 162 sampled full-database query checks per precision across engines/shapes. Private summary reports 72 invocations and 48/48 performance gates. Public file consistency reviewed; private rounds and raw ID/score arrays were not independently re-audited.
+
+原始 FP32 输入；较大 Batch 使用条件误差区间与 FP64 终端累积，返回 FP32 分数。内部证书与同步计入搜索；索引建立和最终结果传输不计入。基线源码 commit 未由公开文件提供；二进制与部分依赖哈希不能替代完整构建来源。桌面 GPU 未声称独占或锁频，13 次采样的尾分位数仅描述性。
+Original FP32 inputs; larger batches use conditional intervals and FP64 terminal accumulation with FP32 returned scores. Internal certificates and synchronization are included; setup and final transfer excluded. Baseline source commits not supplied in public files; executable/dependency hashes are not full build provenance. Desktop GPU, no exclusive use or locked clocks claimed; tail quantiles from 13 samples are descriptive. No formal hardware proof or source-level reproduction claimed.
+
+[Performance](results-devices/amd-rx7900xtx/llama-128-ip/performance.csv) · [Numerical](results-devices/amd-rx7900xtx/llama-128-ip/numerical.csv) · [Samples](results-devices/amd-rx7900xtx/llama-128-ip/samples.csv) · [Environment](results-devices/amd-rx7900xtx/llama-128-ip/environment.json)

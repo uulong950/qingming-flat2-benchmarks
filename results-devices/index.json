@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "release": "v0.7.0",
+  "release": "v0.8.0",
   "devices": [
     {
       "id": "metax-c500",
@@ -126,6 +126,18 @@
           "numerical": "results-devices/amd-rx7900xtx/gist960/numerical.csv",
           "samples": "results-devices/amd-rx7900xtx/gist960/samples.csv",
           "environment": "results-devices/amd-rx7900xtx/gist960/environment.json"
+        },
+        {
+          "id": "llama-128-ip",
+          "name": "Llama · Attention 128",
+          "metric": "IP · max",
+          "n": 256921,
+          "dimension": 128,
+          "queries": 1000,
+          "performance": "results-devices/amd-rx7900xtx/llama-128-ip/performance.csv",
+          "numerical": "results-devices/amd-rx7900xtx/llama-128-ip/numerical.csv",
+          "samples": "results-devices/amd-rx7900xtx/llama-128-ip/samples.csv",
+          "environment": "results-devices/amd-rx7900xtx/llama-128-ip/environment.json"
         }
       ]
     }
