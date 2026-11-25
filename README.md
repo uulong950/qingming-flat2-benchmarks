@@ -4,7 +4,7 @@
 
 Performance · Correctness · Numerical Accuracy · Reproducibility Evidence
 
-[公开基准页面 / Benchmark dashboard](https://uulong950.github.io/qingming-flat2-benchmarks/) · v0.6.0
+[公开基准页面 / Benchmark dashboard](https://uulong950.github.io/qingming-flat2-benchmarks/) · v0.7.0
 
 本仓库公开同设备、同数据集和同协议下的性能、CPU 数值审计、独立确认轮次原始采样与环境证据。计算内核和内部调优仍保存在独立工程，不公开。
 
@@ -15,7 +15,7 @@ Public evidence for within-device comparisons under a shared search contract. Pr
 | Device | Execution environment | Baselines | Datasets |
 |---|---|---|---:|
 | MetaX C500 | 25% compute sGPU · 16,000 MiB quota | mcFaiss | 6 |
-| AMD Radeon RX 7900 XTX 24GB | gfx1100 · Ubuntu desktop · ROCm 7.2.4 | hipVS, Faiss ROCm | 1 |
+| AMD Radeon RX 7900 XTX 24GB | gfx1100 · Ubuntu desktop · ROCm 7.2.4 | hipVS, Faiss ROCm | 2 |
 
 ## MetaX C500 · 既有结果 / Existing results
 
@@ -60,12 +60,12 @@ Public R3 evidence: 30 invocations, 390 observations, 120 numerical rows; 366,66
 
 ## 协议与证据边界 / Protocol and limitations
 
-- GPU Event: resident complete search, excluding preprocessing, indexing, H2D/D2H. API: synchronized search wall time, not end-to-end RPC. QPS is `1000 × B / GPU P50 ms`, not sustained service throughput.
+- GPU Event: resident complete search, excluding offline preprocessing, indexing and final output transfer. GIST960 Qingming includes internal query projection and count transfers. API: synchronized search wall time, not end-to-end RPC. QPS is `1000 × B / GPU P50 ms`, not sustained service throughput.
 - AMD 使用原始 FP32 SIFT 数据，经全量整数域检查后允许无损内部表示；不使用近似量化。 / Lossless representation of verified integer-valued FP32 SIFT inputs is permitted; no approximate quantization.
 - CPU FP64/FP32 full-database ranking checks are sampled; exact distance boundary ties are allowed. Returned score checks cover all reported holdout IDs. Missing fields are not zero.
-- AMD holdout repeats: B=1/10/100/1000/10000 → 21/21/11/7/5. Tail quantiles are descriptive. C500 keeps its original per-dataset protocol.
+- AMD SIFT1M holdout repeats: B=1/10/100/1000/10000 → 21/21/11/7/5. Tail quantiles are descriptive. C500 keeps its original per-dataset protocol.
 - AMD runs on a shared display/compute GPU; exclusive use and locked clocks are not claimed. C500 is partitioned. No cross-device ranking.
-- AMD Faiss/hipVS source commits were not recorded at run time. Executable hashes are recorded; dependency hashes observed after the run are disclosed separately. Do not infer exact source revisions from these hashes.
+- AMD SIFT1M Faiss/hipVS source commits were not recorded at run time. Executable hashes are recorded; dependency hashes observed after the run are disclosed separately. Do not infer exact source revisions from these hashes.
 - Public observations permit independent recomputation of latency statistics and inspection of audit summaries. Private kernels and full returned-ID arrays are not published; source-level reproduction and independent full numerical re-audit from this repository alone are not possible.
 
 ## 数据结构 / Layout
@@ -79,6 +79,45 @@ results-devices/
   amd-rx7900xtx/
     environment.json
     sift1m/{performance,numerical,samples}.csv
+    gist960/{environment.json,performance.csv,numerical.csv,samples.csv}
 ```
 
 设备、数据集、测量口径和对照引擎均由页面动态选择。完整字段和 SHA256 参见各设备的公开环境文件。 / Select device, dataset, timing and baseline independently; see the environment files for hashes and full protocol details.
+
+## GIST960 · AMD RX 7900 XTX / v0.7.0
+
+N=1,000,000 · D=960 · squared L2 · Q=1,000 · B=1/10/100/1000 · K=1/10.
+
+| Baseline | GPU P50 leading | Geometric mean | Min | Max |
+|---|---:|---:|---:|---:|
+| hipVS | 8/8 | 4.802× | 2.683× | 7.595× |
+| Faiss ROCm | 8/8 | 4.403× | 1.103× | 18.359× |
+
+| B | K | Qingming GPU P50 ms | hipVS ms | Faiss ROCm ms | vs hipVS | vs Faiss ROCm |
+|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 1 | 0.977 | 6.552 | 17.930 | 6.708× | 18.359× |
+| 1 | 10 | 1.205 | 6.451 | 19.633 | 5.354× | 16.295× |
+| 10 | 1 | 1.414 | 6.519 | 19.492 | 4.609× | 13.782× |
+| 10 | 10 | 2.200 | 6.628 | 19.679 | 3.013× | 8.947× |
+| 100 | 1 | 10.274 | 42.741 | 22.177 | 4.160× | 2.158× |
+| 100 | 10 | 16.282 | 43.683 | 20.690 | 2.683× | 1.271× |
+| 1000 | 1 | 63.525 | 482.478 | 80.375 | 7.595× | 1.265× |
+| 1000 | 10 | 72.269 | 482.805 | 79.743 | 6.681× | 1.103× |
+
+公开确认轮包含 24 次调用、312 对 GPU/API 计时样本（每组每引擎 13 对）、96 条数值记录。每种 CPU 精度核对 36,663 个返回分数及 168 次全库抽样查询；88 次完整私有实验每种精度分别为 134,431 与 328。排名检查不是全部查询的严格证明。
+
+Public R3: 24 invocations, 312 GPU/API timing pairs (13 per engine and shape), 96 audit rows. Per precision: 36,663 returned scores and 168 sampled full-database query checks across engines/shapes. Full private audit: 88 invocations; 134,431 scores and 328 sampled query checks per precision. Ranking validation is not exhaustive.
+
+GIST960 独立环境：[environment.json](results-devices/amd-rx7900xtx/gist960/environment.json)。原始 FP32 输入、辅助投影摘要、最终 FP64 累积与 FP32 返回分数。辅助索引 1,538,949,192 bytes；基础索引构建约 3.730 s，扩展约 3.265 s（后者不含基础构建与后续模型审计）。离线索引构建不计入搜索；查询投影和内部计数传输计入 Qingming 搜索。文件大小不是峰值显存；未测量外部基线的建库成本。
+
+GIST960 uses original FP32 inputs and database-derived auxiliary summaries, with FP64 final accumulation and FP32 returned scores. The auxiliary index is 1,538,949,192 bytes; base build ~3.730 s, extension ~3.265 s (excluding base build and later model audit). Offline setup is excluded; query projection and internal count transfer are included. File size is not peak VRAM; vendor setup costs were not measured.
+
+ULP：统一正负零后计算，原始位模式最大值已与24次私有审计核对。大 ULP 不等于违反绝对/相对误差容差；Faiss ROCm 最大 FP32 ULP 为 922,746,880，原样保留。
+
+ULP canonicalizes signed zeros; raw-bit maxima were reconciled against 24 private audits. Large ULP counts are not necessarily tolerance failures; Faiss ROCm maximum FP32 ULP is 922,746,880, retained without alteration.
+
+GIST960 基线源码 commit 未记录；运行前采集并复核部分依赖库及二进制哈希，不构成完整构建来源证明。有限精度 GPU 证书尚无形式化证明。公开样本可复算统计，但私有内核及完整返回数组不公开。桌面 GPU 未声称独占使用或锁定频率。
+
+GIST960 baseline source commits are unknown. Selected runtime library and executable hashes were captured at run start and rechecked, not complete build provenance. No formal GPU floating-point certificate or source-level independent reproduction is claimed. Exclusive GPU use and locked clocks are not claimed.
+
+[Performance](results-devices/amd-rx7900xtx/gist960/performance.csv) · [Numerical](results-devices/amd-rx7900xtx/gist960/numerical.csv) · [Samples](results-devices/amd-rx7900xtx/gist960/samples.csv) · [Environment](results-devices/amd-rx7900xtx/gist960/environment.json)

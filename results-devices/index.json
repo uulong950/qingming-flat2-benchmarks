@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "release": "v0.6.0",
+  "release": "v0.7.0",
   "devices": [
     {
       "id": "metax-c500",
@@ -114,6 +114,18 @@
           "performance": "results-devices/amd-rx7900xtx/sift1m/performance.csv",
           "numerical": "results-devices/amd-rx7900xtx/sift1m/numerical.csv",
           "samples": "results-devices/amd-rx7900xtx/sift1m/samples.csv"
+        },
+        {
+          "id": "gist960",
+          "name": "GIST960",
+          "metric": "L2 squared",
+          "n": 1000000,
+          "dimension": 960,
+          "queries": 1000,
+          "performance": "results-devices/amd-rx7900xtx/gist960/performance.csv",
+          "numerical": "results-devices/amd-rx7900xtx/gist960/numerical.csv",
+          "samples": "results-devices/amd-rx7900xtx/gist960/samples.csv",
+          "environment": "results-devices/amd-rx7900xtx/gist960/environment.json"
         }
       ]
     }

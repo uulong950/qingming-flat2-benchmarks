@@ -1,0 +1,159 @@
+{
+  "id": "gist960",
+  "name": "GIST960",
+  "run_id": "gist960_v096_paired_20261125T041810395523Z",
+  "sha256": "03c8a1d7fb6282f64249f6050e0f5a38571ac88d6fcecb4b597107dc571ff91d",
+  "metric": "L2 squared",
+  "n": 1000000,
+  "dimension": 960,
+  "queries": 1000,
+  "environment": {
+    "os": "Ubuntu 24.04.5 LTS",
+    "host_cpu": "AMD Ryzen 9 9950X 16-Core Processor",
+    "kernel": "7.0.0-43-generic",
+    "rocm_version": "7.2.4",
+    "architecture": "gfx1100",
+    "vram_total_bytes": 25753026560,
+    "architecture_override": false,
+    "execution_mode": "Desktop; exclusive GPU use and locked clocks not claimed"
+  },
+  "benchmark": {
+    "dataset": "GIST960",
+    "metric": "squared L2",
+    "n": 1000000,
+    "dimension": 960,
+    "query_count": 1000,
+    "query_set": "original [0:B], no repetition",
+    "rounds": 3,
+    "independent_holdout_round": 3,
+    "repeats_by_batch": {
+      "1": 13,
+      "10": 13,
+      "100": 13,
+      "1000": 13
+    },
+    "holdout_warmup": 3,
+    "timing_scope": "device-resident search; final D2H excluded for all engines; internal query projection and count D2H included for Qingming; GPU events include stream idle gaps; API is synchronized search wall time",
+    "qps_definition": "1000 * batch / P50 ms; batch-throughput proxy",
+    "expected_workloads": 8,
+    "qualified_workloads": 8,
+    "private_audited_invocations": 88,
+    "resident_worker_blocks": 9,
+    "uninterrupted_dispatch": true,
+    "display_gate": false,
+    "public_holdout_invocations": 24,
+    "public_samples_count": 312,
+    "public_numerical_rows": 96,
+    "public_returned_scores_per_precision": 36663,
+    "public_sampled_query_rows_per_precision": 168,
+    "private_all_invocation_returned_scores_per_precision": 134431,
+    "private_all_invocation_sampled_query_rows_per_precision": 328,
+    "oracle_coverage": "FP64/FP32 sampled full-database Top-K membership; exact boundary ties accepted; not exhaustive ranking proof",
+    "score_audit": "FP64 and FP32 all returned-ID distances; absolute tolerance 0.001, relative tolerance 0.0001, threshold max(abs, rel*abs(reference)).",
+    "precision_note": "Original FP32 operands; database-derived auxiliary projection summaries; final original-distance evaluation with FP64 accumulation and FP32 returned scores. No formal GPU floating-point certificate or exhaustive ranking proof claimed.",
+    "statistical_note": "P95/P99 descriptive; 13 samples per engine and shape.",
+    "baseline_selection": "hipVS L2Expanded/L2Unexpanded selected per workload from R1/R2; fixed for R3; Faiss GPU FlatL2 FP32; Qingming frozen before paired run.",
+    "public_sample_scope": "R3 only; no tuning traces",
+    "index_setup_excluded": true,
+    "index_storage_bytes": 1538949192,
+    "base_index_storage_bytes": 512983096,
+    "base_index_build_wall_seconds": 3.730192110000644,
+    "extended_index_build_wall_seconds": 3.264512219999233,
+    "index_build_note": "CPU preprocessing, excluded from search timing. Extended build includes base verification and extension construction, excludes original base construction and later model audit. File bytes are not peak VRAM. Vendor setup costs not measured here.",
+    "fp32_ulp_definition": "For finite nonnegative FP32 scores, absolute difference of monotone uint32 encodings after canonicalizing both signed zeros to +0. Original raw-bit maxima independently reconciled against all R3 private audits; canonicalization applies only to ULP reporting, not distances, ranks or tolerance checks.",
+    "fp32_ulp_reconciliation": {
+      "cases_checked": 24,
+      "original_raw_bit_maxima_matched": true,
+      "cases_with_negative_zero": [
+        {
+          "batch": 100,
+          "k": 1,
+          "backend": "hipvs",
+          "raw_max_ulp": 2147483648,
+          "canonical_max_ulp": 2674,
+          "returned_negative_zero_count": 2,
+          "reference_negative_zero_count": 0,
+          "pairs_with_negative_zero": 2
+        },
+        {
+          "batch": 100,
+          "k": 10,
+          "backend": "hipvs",
+          "raw_max_ulp": 2147483648,
+          "canonical_max_ulp": 3244,
+          "returned_negative_zero_count": 4,
+          "reference_negative_zero_count": 0,
+          "pairs_with_negative_zero": 4
+        },
+        {
+          "batch": 1000,
+          "k": 1,
+          "backend": "hipvs",
+          "raw_max_ulp": 2147483648,
+          "canonical_max_ulp": 5121,
+          "returned_negative_zero_count": 8,
+          "reference_negative_zero_count": 0,
+          "pairs_with_negative_zero": 8
+        },
+        {
+          "batch": 1000,
+          "k": 10,
+          "backend": "hipvs",
+          "raw_max_ulp": 2147483648,
+          "canonical_max_ulp": 5121,
+          "returned_negative_zero_count": 10,
+          "reference_negative_zero_count": 0,
+          "pairs_with_negative_zero": 10
+        }
+      ]
+    }
+  },
+  "provenance": {
+    "dataset_sha256": "03c8a1d7fb6282f64249f6050e0f5a38571ac88d6fcecb4b597107dc571ff91d",
+    "source_hdf5_sha256": "8e95831936bfdbfa0a56086942e2cf98cd703517c67f985914183eb4cdbf026a",
+    "index_sha256": "82158dcdbb021e477ce865165ae2e2b2b429a1ae90eb19c3edb17136a1fa4953",
+    "base_index_sha256": "e33df25282efd39356f0695fd29a378ef5f64753890743058b7c82bc631a2178",
+    "private_protocol_sha256": "05036d9a0056b9de0e63d3195b63e5afbc3590d5d228f6b27485afee4b76e0ac",
+    "binary_sha256": {
+      "qingming": "dc98d33aef7b40369ab06764b3c44faba88079c2adcc677bf98a58fdd27a9ee6",
+      "hipvs": "363bbfb2ba5491cb9334724f4db6e061e2bed6ded27aeadc0b8666aa9760f9e3",
+      "faiss_rocm": "88ea5b4f6d5f9f74301819029cc87a972f8a1f16df5c66ce9d909601b2fa93d0"
+    },
+    "dependency_sha256_recorded_at_start": {
+      "qingming": {
+        "libamdhip64.so.7": "f1043337461c8e54ee135e95fa979a7d0e4344676ad5b0554652f844f8f098ac",
+        "libhsa-runtime64.so.1": "b8cdfe93d343649a35c1daf73a0a3a6840f09379ebeee9be65670461ffea43f4"
+      },
+      "hipvs": {
+        "libamdhip64.so.7": "f1043337461c8e54ee135e95fa979a7d0e4344676ad5b0554652f844f8f098ac",
+        "libhipblas.so.3": "4d256f7897b50ababe69cf704d687da655ae23e608cb72333a4df1cd93668e3e",
+        "libhipblaslt.so.1": "4c89a592944beafe388d21cd491c654820baba3d0c12d35fb8fe7020722bb950",
+        "libhsa-runtime64.so.1": "b8cdfe93d343649a35c1daf73a0a3a6840f09379ebeee9be65670461ffea43f4",
+        "librocblas.so.5": "3f0e5b227d6cf340ac94b08c3061429064f58e18ef62c883bbb543248e1e814b",
+        "librocrand.so.1": "d9afcfe3145060e453ae2e5d970b5259c529dc1fdc81f62a652e100a97fa831f",
+        "librocroller.so.1": "cbbd056b2ebb0581a1ded7af6f798767716ff5b6af0eac30bf714975a77151bf"
+      },
+      "faiss_rocm": {
+        "libhipblas.so.3": "4d256f7897b50ababe69cf704d687da655ae23e608cb72333a4df1cd93668e3e",
+        "libamdhip64.so.7": "f1043337461c8e54ee135e95fa979a7d0e4344676ad5b0554652f844f8f098ac",
+        "librocblas.so.5": "3f0e5b227d6cf340ac94b08c3061429064f58e18ef62c883bbb543248e1e814b",
+        "libhsa-runtime64.so.1": "b8cdfe93d343649a35c1daf73a0a3a6840f09379ebeee9be65670461ffea43f4",
+        "libhipblaslt.so.1": "4c89a592944beafe388d21cd491c654820baba3d0c12d35fb8fe7020722bb950",
+        "librocroller.so.1": "cbbd056b2ebb0581a1ded7af6f798767716ff5b6af0eac30bf714975a77151bf"
+      }
+    },
+    "dependency_note": "Selected runtime library content hashes captured at experiment start, rechecked after experiment and at export; not full build provenance.",
+    "faiss_declared_checkout_head": null,
+    "hipvs_declared_checkout_head": null,
+    "source_git_note": "Declared checkout HEAD is not proof of binary build provenance; missing commit remains unknown.",
+    "source_level_reproduction": "Public samples support recomputing statistics; private Qingming kernel and full rerun unavailable.",
+    "publication_review": "PUBLIC_EXPORT_CONSISTENCY_CHECKED; BASELINE SOURCE COMMITS UNKNOWN; SELECTED RUNTIME HASHES RECORDED",
+    "public_candidate_zip_sha256": "432d626c07a1695db6ca383c6a125e539e1380a8c3ec1fb864629a36d21a3726"
+  },
+  "csv_sha256": {
+    "numerical.csv": "b3979a97a21b5563f25b2e367d5e47ee4afa6b9f1921df8db2211ce4d23773f7",
+    "performance.csv": "8646ad7f95b484bb5d7fc49ed00df3b492e178957e96b6cac5a691b06f74e79a",
+    "samples.csv": "49fcf43903cbb57163dabb965069376667134afd64fdbc22794efb7d74c85998"
+  },
+  "release": "v0.7.0"
+}
