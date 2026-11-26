@@ -4,7 +4,7 @@
 
 Performance · Correctness · Numerical Accuracy · Reproducibility Evidence
 
-[公开基准页面 / Benchmark dashboard](https://uulong950.github.io/qingming-flat2-benchmarks/) · v0.8.0
+[公开基准页面 / Benchmark dashboard](https://uulong950.github.io/qingming-flat2-benchmarks/) · v0.9.0
 
 本仓库公开同设备、同数据集和同协议下的性能、CPU 数值审计、独立确认轮次原始采样与环境证据。计算内核和内部调优仍保存在独立工程，不公开。
 
@@ -15,7 +15,7 @@ Public evidence for within-device comparisons under a shared search contract. Pr
 | Device | Execution environment | Baselines | Datasets |
 |---|---|---|---:|
 | MetaX C500 | 25% compute sGPU · 16,000 MiB quota | mcFaiss | 6 |
-| AMD Radeon RX 7900 XTX 24GB | gfx1100 · Ubuntu desktop · ROCm 7.2.4 | hipVS, Faiss ROCm | 3 |
+| AMD Radeon RX 7900 XTX 24GB | gfx1100 · Ubuntu desktop · ROCm 7.2.4 | hipVS, Faiss ROCm | 4 |
 
 ## MetaX C500 · 既有结果 / Existing results
 
@@ -81,6 +81,7 @@ results-devices/
     sift1m/{performance,numerical,samples}.csv
     gist960/{environment.json,performance.csv,numerical.csv,samples.csv}
     llama-128-ip/{environment.json,performance.csv,numerical.csv,samples.csv}
+    laionclip512/{environment.json,performance.csv,numerical.csv,samples.csv}
 ```
 
 设备、数据集、测量口径和对照引擎均由页面动态选择。完整字段和 SHA256 参见各设备的公开环境文件。 / Select device, dataset, timing and baseline independently; see the environment files for hashes and full protocol details.
@@ -148,3 +149,29 @@ Public R3: 24 invocations, 312 timing pairs, 96 audit records; 36,663 returned s
 Original FP32 inputs; larger batches use conditional intervals and FP64 terminal accumulation with FP32 returned scores. Internal certificates and synchronization are included; setup and final transfer excluded. Baseline source commits not supplied in public files; executable/dependency hashes are not full build provenance. Desktop GPU, no exclusive use or locked clocks claimed; tail quantiles from 13 samples are descriptive. No formal hardware proof or source-level reproduction claimed.
 
 [Performance](results-devices/amd-rx7900xtx/llama-128-ip/performance.csv) · [Numerical](results-devices/amd-rx7900xtx/llama-128-ip/numerical.csv) · [Samples](results-devices/amd-rx7900xtx/llama-128-ip/samples.csv) · [Environment](results-devices/amd-rx7900xtx/llama-128-ip/environment.json)
+
+## LAION-CLIP-512 · AMD RX 7900 XTX / v0.9.0
+
+N=1,000,448 · D=512 · IP max · Q=1,000 · B=1/10/100/1000 · K=1/10.
+
+| B | K | Qingming GPU P50 ms | hipVS ms | Faiss ROCm ms | vs hipVS | vs Faiss ROCm |
+|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 1 | 2.9487 | 4.1427 | 11.0174 | 1.405× | 3.736× |
+| 1 | 10 | 3.2889 | 4.1294 | 11.2046 | 1.256× | 3.407× |
+| 10 | 1 | 3.0048 | 4.3933 | 11.0348 | 1.462× | 3.672× |
+| 10 | 10 | 2.8969 | 4.4443 | 11.2469 | 1.534× | 3.882× |
+| 100 | 1 | 5.7192 | 43.1511 | 11.7275 | 7.545× | 2.051× |
+| 100 | 10 | 5.9019 | 43.0152 | 11.8487 | 7.288× | 2.008× |
+| 1000 | 1 | 39.8832 | 235.2121 | 46.0044 | 5.898× | 1.153× |
+| 1000 | 10 | 40.9011 | 235.4848 | 46.4921 | 5.757× | 1.137× |
+
+GPU P50：两套基线各 8/8 领先；几何平均加速 3.045× / 2.365×，最低 1.256× / 1.137×（hipVS / Faiss ROCm）。
+GPU P50: 8/8 leading against each baseline; geometric mean 3.045× / 2.365×, minimum 1.256× / 1.137× (hipVS / Faiss ROCm).
+
+三轮 72 次调用，48/48 性能门槛通过；公开 R3 24 次调用、312 对计时、96 条审计记录。每种精度 36,663 返回分数和 174 次抽样全库查询检查。hipVS B1000 K10 有一条合法边界并列替换；按并列感知规则全部通过。
+Three rounds, 72 invocations, all 48 performance gates passed. Public R3: 24 invocations, 312 timing pairs, 96 audit rows; 36,663 scores and 174 sampled full-database query checks per precision. One legitimate boundary-tie replacement for hipVS B1000 K10 per precision; all tie-aware checks pass.
+
+原始 FP32 输入，不重新归一化；大 Batch 使用条件误差区间及 FP64 终端。索引构建和最终结果传输不计入。桌面运行，未锁频或声称独占；13 次采样的尾分位数仅描述性。上传证据的哈希、计时与原始结果结构已复核；缺少原始数据库，未独立重算 CPU oracle。未提供基线源码 commit。
+Original FP32 inputs, no renormalization; larger batches use conditional intervals and FP64 terminal. Index setup and final result transfer excluded. Desktop GPU, no locked clocks or exclusive use claimed. Tail quantiles from 13 samples are descriptive. Uploaded evidence hashes, timings and raw result structures reviewed; CPU oracle scores/rankings not independently recomputed without the dataset. Baseline source commits unavailable. No formal hardware proof or source-level reproduction claimed.
+
+[Performance](results-devices/amd-rx7900xtx/laionclip512/performance.csv) · [Numerical](results-devices/amd-rx7900xtx/laionclip512/numerical.csv) · [Samples](results-devices/amd-rx7900xtx/laionclip512/samples.csv) · [Environment](results-devices/amd-rx7900xtx/laionclip512/environment.json)

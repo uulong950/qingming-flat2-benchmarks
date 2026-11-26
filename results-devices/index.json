@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "release": "v0.8.0",
+  "release": "v0.9.0",
   "devices": [
     {
       "id": "metax-c500",
@@ -138,6 +138,18 @@
           "numerical": "results-devices/amd-rx7900xtx/llama-128-ip/numerical.csv",
           "samples": "results-devices/amd-rx7900xtx/llama-128-ip/samples.csv",
           "environment": "results-devices/amd-rx7900xtx/llama-128-ip/environment.json"
+        },
+        {
+          "id": "laionclip512",
+          "name": "LAION · CLIP 512",
+          "metric": "IP · max",
+          "n": 1000448,
+          "dimension": 512,
+          "queries": 1000,
+          "performance": "results-devices/amd-rx7900xtx/laionclip512/performance.csv",
+          "numerical": "results-devices/amd-rx7900xtx/laionclip512/numerical.csv",
+          "samples": "results-devices/amd-rx7900xtx/laionclip512/samples.csv",
+          "environment": "results-devices/amd-rx7900xtx/laionclip512/environment.json"
         }
       ]
     }
