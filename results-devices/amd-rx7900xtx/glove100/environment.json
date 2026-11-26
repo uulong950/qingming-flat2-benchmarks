@@ -1,0 +1,261 @@
+{
+  "id": "glove100",
+  "name": "GloVe 100",
+  "run_id": "v142-final.SoGRDO",
+  "sha256": "2667c5c4de76f4fc822cd069a6b6498db5e1e456b8eb7383ee5218ca74c5da29",
+  "metric": "Cosine · max",
+  "n": 1183514,
+  "dimension": 100,
+  "queries": 10000,
+  "environment": {
+    "os": "Ubuntu 24.04.5 LTS",
+    "host_cpu": "AMD Ryzen 9 9950X 16-Core Processor",
+    "kernel": "7.0.0-43-generic",
+    "rocm_version": "7.2.4",
+    "architecture": "gfx1100",
+    "execution_mode": "Desktop allowed; exclusive GPU use and locked clocks not claimed",
+    "architecture_override": false,
+    "vram_total_bytes": 25753026560
+  },
+  "benchmark": {
+    "dataset": "GloVe-100-angular",
+    "metric": "cosine_similarity_max",
+    "query_set": "original [0:B], no repetition",
+    "rounds": 3,
+    "independent_holdout_round": 3,
+    "repeats_by_batch": {
+      "1": 13,
+      "10": 13,
+      "100": 13,
+      "1000": 13,
+      "10000": 13
+    },
+    "holdout_warmup": 3,
+    "timing_scope": "Device-resident complete search, preprocessing and transfers excluded",
+    "qps_definition": "1000 * batch / GPU P50 ms; batch throughput proxy",
+    "expected_workloads": 10,
+    "qualified_workloads": 10,
+    "private_audited_invocations": 90,
+    "resident_worker_blocks": 90,
+    "uninterrupted_dispatch": true,
+    "public_holdout_invocations": 30,
+    "public_samples_count": 390,
+    "public_numerical_rows": 120,
+    "public_returned_scores_per_precision": 366663,
+    "public_sampled_query_rows_per_precision": 252,
+    "oracle_coverage": "Raw original vectors; FP64/FP32 sampled full-database membership, exact boundary ties accepted. Not exhaustive ranking proof.",
+    "score_audit": "All returned ID scores against raw cosine; tolerance max(0.001,0.0001*abs(reference)).",
+    "precision_note": "GPU uses FP32-normalized vectors and IP; native certificate path conditionally uses FP64 terminal on normalized operands, not original raw cosine. CPU oracle independently computes original raw cosine.",
+    "statistical_note": "13 samples; P95/P99 descriptive.",
+    "baseline_selection": "Five frozen binaries; R3 only public.",
+    "performance_gate_min_latency_reduction": 0.01,
+    "performance_gate_counts": {
+      "1": {
+        "hipvs": 10,
+        "faiss_rocm": 10
+      },
+      "2": {
+        "hipvs": 10,
+        "faiss_rocm": 10
+      },
+      "3": {
+        "hipvs": 10,
+        "faiss_rocm": 10
+      }
+    },
+    "public_sample_scope": "R3 only",
+    "index_setup_excluded": true
+  },
+  "provenance": {
+    "normalized_sha256": "2667c5c4de76f4fc822cd069a6b6498db5e1e456b8eb7383ee5218ca74c5da29",
+    "raw_sha256": "95aa4aa0bc168454ebfc0d610dba42531c90c293ac079befb8c4624382e1bfaa",
+    "source_hdf5_sha256": "544af1d5e84e112cd4749571dcfd8ca109818a572f850af75a3a09e093a953c4",
+    "private_protocol_sha256": "d91207b42e8db238a0b6dbbb93b4935b867a2d05f1177fd1b6ad54b695f097d3",
+    "private_summary_sha256": "bf7cf5cd207fba6b36e56595116fb6f2786c3328ea0e7a34a020c906be259c7a",
+    "binary_sha256": {
+      "qm08": "ea54ae9803308758f3d6c900e1842b33bc10acd0be6491679be50fe93636a9b6",
+      "hipvs": "71bcd9c5f289dfa8b6b72214b086ee88884b1225bbd3dd097abb3c466b261a95",
+      "faiss_rocm": "c04068cf9363f88454993b990ebd6c977edb6149f6303da3065b578408ed1564",
+      "qm140": "e0908a1832cfd709d7231c606c0de6de49384cdf9769989c034dae84e5efd78e",
+      "qm141": "f624f197e98edacdb65eef06aeb78da7c4b6bcbc4992ec659ccce5512a5d8b4d"
+    },
+    "dependency_sha256_recorded_at_start": {
+      "qm08": {
+        "libamdhip64.so.7": "f1043337461c8e54ee135e95fa979a7d0e4344676ad5b0554652f844f8f098ac",
+        "libstdc++.so.6": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+        "libm.so.6": "5dcc4d25466e29ca390ed6fabb371c69b65dff6fa4e91c34561057a020d6994a",
+        "libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+        "libc.so.6": "755a371e86cc9f564ab54f66140747700fb0a103f698f659f2060f707897e09a",
+        "librocprofiler-register.so.0": "1a23a2b5a62dc7feee9259b9a307bca94caef7cfbaebc7b1b20a0289ed7e69f0",
+        "libhsa-runtime64.so.1": "b8cdfe93d343649a35c1daf73a0a3a6840f09379ebeee9be65670461ffea43f4",
+        "ld-linux-x86-64.so.2": "5fc0940888e9d2e1a00e66d6b1a559c36364ee867683652e1074fa576952cc3f",
+        "libelf.so.1": "248c989360783cdc52f3659921de852c2efcc2097253ce58e34443f856412814",
+        "libdrm.so.2": "3666067992714d60452faebefbb78ebf8b6bafeb38de394b7ac9dc2a67b64b54",
+        "libdrm_amdgpu.so.1": "f9a734ec7bd7594a4660c387e8e4393b2a509d563cdd06e83e0d13a6c1b0b112",
+        "libnuma.so.1": "02d7582c5d391e460e56aa67a414360e3183b968206645b9123f9dc7bff5d009",
+        "libz.so.1": "f61677c7bdb7c2aa2a243ea781bfd16afcb361cede7b4ef76127a9d8eb9a5242",
+        "libzstd.so.1": "0a2128bc10841fb29e76d08d945864dfb0b6a66da5df6df5d8299197439e54bb"
+      },
+      "hipvs": {
+        "libcuvs.so": "b69f8666c3b2444947b98b1ac641c7c1450357ef5545f4be1a02dd5553bd2246",
+        "librmm.so": "34b070e0473215e7df218ac20e822fbe1a22959baf49272c4bf51b870e447a92",
+        "librapids_logger.so": "1e35471b245c5efe61395341c4b8f973fb19dc53637d088441c7b21ed91ddcf1",
+        "libamdhip64.so.7": "f1043337461c8e54ee135e95fa979a7d0e4344676ad5b0554652f844f8f098ac",
+        "libhipblas.so.3": "4d256f7897b50ababe69cf704d687da655ae23e608cb72333a4df1cd93668e3e",
+        "libhipsolver.so.1": "0a70dedd7f530c58ea3274c91c1521ce3f7b737bb5a0e92ca22d9310dd15cba1",
+        "libhipsparse.so.4": "6db9914e2f146a896fd1e3b43eccc48e0218081e8b670d74eb737aee1b6a273f",
+        "libhiprand.so.1": "de0f0d5cca649b9ce539b210c4004ce7c51547256df66a3af941c2db8d03d758",
+        "libhipblaslt.so.1": "4c89a592944beafe388d21cd491c654820baba3d0c12d35fb8fe7020722bb950",
+        "libblas.so.3": "e748efcae5753fe4a652877fccdb5895ac6f7605668a2db878b19c914e78e3a8",
+        "liblapack.so.3": "851bb1fc5833ede9ed704b4417a251a899976d5e0915de40452615187a65278f",
+        "libstdc++.so.6": "9ac7e2ec283e4a4a9a1ffdf0a17d688ca90e7f9d020cb8f372af7fa5194618f0",
+        "libm.so.6": "5dcc4d25466e29ca390ed6fabb371c69b65dff6fa4e91c34561057a020d6994a",
+        "libomp.so": "874e24cdfe2c07b8d9bde7f2723983b7d0123917f10697204d6f77d4ba9e1055",
+        "libgcc_s.so.1": "bbc0c0723c4ae25324adced7fa6ae6804ddf028fb72c5895312fc3cdba901b2d",
+        "libc.so.6": "755a371e86cc9f564ab54f66140747700fb0a103f698f659f2060f707897e09a",
+        "librccl.so.1": "53149bc0a64faa580876b0f6b745ebfc02c4371be4e2a24daf90c23782ed96d3",
+        "ld-linux-x86-64.so.2": "5fc0940888e9d2e1a00e66d6b1a559c36364ee867683652e1074fa576952cc3f",
+        "librocprofiler-register.so.0": "1a23a2b5a62dc7feee9259b9a307bca94caef7cfbaebc7b1b20a0289ed7e69f0",
+        "libhsa-runtime64.so.1": "b8cdfe93d343649a35c1daf73a0a3a6840f09379ebeee9be65670461ffea43f4",
+        "librocsolver.so.0": "af4590ee6a03507d2264b20055f06a1304bbcb3a87c8193fe71e2fb27aacfafc",
+        "librocblas.so.5": "3f0e5b227d6cf340ac94b08c3061429064f58e18ef62c883bbb543248e1e814b",
+        "librocsparse.so.1": "395af4a691e9ec48814e36e7dd0bf1fb3cada6b0e675581c0c870d0335ce0adf",
+        "librocrand.so.1": "d9afcfe3145060e453ae2e5d970b5259c529dc1fdc81f62a652e100a97fa831f",
+        "libroctx64.so.4": "22bbc6946fdf5d7d8b1755cbd738c42a63f3795d18ac3ed1285b09cc772dee17",
+        "librocroller.so.1": "cbbd056b2ebb0581a1ded7af6f798767716ff5b6af0eac30bf714975a77151bf",
+        "libgfortran.so.5": "342618ccfebe840446e4ef2b7893f4161b2084845e570f42d68a70bfde58a58d",
+        "libdl.so.2": "4dbcca3c01ca84d092b5b7b2610f5835b55fc70a0288dd9d766b40ac9386e2d9",
+        "librocm_smi64.so.1": "cca245677e869de87b11b3f4c0358be63c60190f26a0821ed06f6801764125a5",
+        "libelf.so.1": "248c989360783cdc52f3659921de852c2efcc2097253ce58e34443f856412814",
+        "libdrm.so.2": "3666067992714d60452faebefbb78ebf8b6bafeb38de394b7ac9dc2a67b64b54",
+        "libdrm_amdgpu.so.1": "f9a734ec7bd7594a4660c387e8e4393b2a509d563cdd06e83e0d13a6c1b0b112",
+        "libnuma.so.1": "02d7582c5d391e460e56aa67a414360e3183b968206645b9123f9dc7bff5d009",
+        "libamd_comgr.so.3": "f893a0e750947d11c5ee8d77c7ae6de80d5c04b4f4c31ba3ff4d2df6de4bff79",
+        "libz.so.1": "f61677c7bdb7c2aa2a243ea781bfd16afcb361cede7b4ef76127a9d8eb9a5242",
+        "libzstd.so.1": "0a2128bc10841fb29e76d08d945864dfb0b6a66da5df6df5d8299197439e54bb"
+      },
+      "faiss_rocm": {
+        "libomp.so": "874e24cdfe2c07b8d9bde7f2723983b7d0123917f10697204d6f77d4ba9e1055",
+        "libblas.so.3": "e748efcae5753fe4a652877fccdb5895ac6f7605668a2db878b19c914e78e3a8",
+        "liblapack.so.3": "851bb1fc5833ede9ed704b4417a251a899976d5e0915de40452615187a65278f",
+        "libhipblas.so.3": "4d256f7897b50ababe69cf704d687da655ae23e608cb72333a4df1cd93668e3e",
+        "libamdhip64.so.7": "f1043337461c8e54ee135e95fa979a7d0e4344676ad5b0554652f844f8f098ac",
+        "libstdc++.so.6": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+        "libm.so.6": "5dcc4d25466e29ca390ed6fabb371c69b65dff6fa4e91c34561057a020d6994a",
+        "libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+        "libc.so.6": "755a371e86cc9f564ab54f66140747700fb0a103f698f659f2060f707897e09a",
+        "ld-linux-x86-64.so.2": "5fc0940888e9d2e1a00e66d6b1a559c36364ee867683652e1074fa576952cc3f",
+        "libgfortran.so.5": "342618ccfebe840446e4ef2b7893f4161b2084845e570f42d68a70bfde58a58d",
+        "librocsolver.so.0": "af4590ee6a03507d2264b20055f06a1304bbcb3a87c8193fe71e2fb27aacfafc",
+        "librocblas.so.5": "3f0e5b227d6cf340ac94b08c3061429064f58e18ef62c883bbb543248e1e814b",
+        "librocprofiler-register.so.0": "1a23a2b5a62dc7feee9259b9a307bca94caef7cfbaebc7b1b20a0289ed7e69f0",
+        "libhsa-runtime64.so.1": "b8cdfe93d343649a35c1daf73a0a3a6840f09379ebeee9be65670461ffea43f4",
+        "libhipblaslt.so.1": "4c89a592944beafe388d21cd491c654820baba3d0c12d35fb8fe7020722bb950",
+        "libelf.so.1": "248c989360783cdc52f3659921de852c2efcc2097253ce58e34443f856412814",
+        "libdrm.so.2": "3666067992714d60452faebefbb78ebf8b6bafeb38de394b7ac9dc2a67b64b54",
+        "libdrm_amdgpu.so.1": "f9a734ec7bd7594a4660c387e8e4393b2a509d563cdd06e83e0d13a6c1b0b112",
+        "libnuma.so.1": "02d7582c5d391e460e56aa67a414360e3183b968206645b9123f9dc7bff5d009",
+        "libroctx64.so.4": "22bbc6946fdf5d7d8b1755cbd738c42a63f3795d18ac3ed1285b09cc772dee17",
+        "librocroller.so.1": "cbbd056b2ebb0581a1ded7af6f798767716ff5b6af0eac30bf714975a77151bf",
+        "libz.so.1": "f61677c7bdb7c2aa2a243ea781bfd16afcb361cede7b4ef76127a9d8eb9a5242",
+        "libzstd.so.1": "0a2128bc10841fb29e76d08d945864dfb0b6a66da5df6df5d8299197439e54bb",
+        "libamd_comgr.so.3": "f893a0e750947d11c5ee8d77c7ae6de80d5c04b4f4c31ba3ff4d2df6de4bff79"
+      },
+      "qm140": {
+        "libamdhip64.so.7": "f1043337461c8e54ee135e95fa979a7d0e4344676ad5b0554652f844f8f098ac",
+        "libstdc++.so.6": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+        "libm.so.6": "5dcc4d25466e29ca390ed6fabb371c69b65dff6fa4e91c34561057a020d6994a",
+        "libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+        "libc.so.6": "755a371e86cc9f564ab54f66140747700fb0a103f698f659f2060f707897e09a",
+        "librocprofiler-register.so.0": "1a23a2b5a62dc7feee9259b9a307bca94caef7cfbaebc7b1b20a0289ed7e69f0",
+        "libhsa-runtime64.so.1": "b8cdfe93d343649a35c1daf73a0a3a6840f09379ebeee9be65670461ffea43f4",
+        "ld-linux-x86-64.so.2": "5fc0940888e9d2e1a00e66d6b1a559c36364ee867683652e1074fa576952cc3f",
+        "libelf.so.1": "248c989360783cdc52f3659921de852c2efcc2097253ce58e34443f856412814",
+        "libdrm.so.2": "3666067992714d60452faebefbb78ebf8b6bafeb38de394b7ac9dc2a67b64b54",
+        "libdrm_amdgpu.so.1": "f9a734ec7bd7594a4660c387e8e4393b2a509d563cdd06e83e0d13a6c1b0b112",
+        "libnuma.so.1": "02d7582c5d391e460e56aa67a414360e3183b968206645b9123f9dc7bff5d009",
+        "libz.so.1": "f61677c7bdb7c2aa2a243ea781bfd16afcb361cede7b4ef76127a9d8eb9a5242",
+        "libzstd.so.1": "0a2128bc10841fb29e76d08d945864dfb0b6a66da5df6df5d8299197439e54bb"
+      },
+      "qm141": {
+        "libamdhip64.so.7": "f1043337461c8e54ee135e95fa979a7d0e4344676ad5b0554652f844f8f098ac",
+        "libstdc++.so.6": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+        "libm.so.6": "5dcc4d25466e29ca390ed6fabb371c69b65dff6fa4e91c34561057a020d6994a",
+        "libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+        "libc.so.6": "755a371e86cc9f564ab54f66140747700fb0a103f698f659f2060f707897e09a",
+        "librocprofiler-register.so.0": "1a23a2b5a62dc7feee9259b9a307bca94caef7cfbaebc7b1b20a0289ed7e69f0",
+        "libhsa-runtime64.so.1": "b8cdfe93d343649a35c1daf73a0a3a6840f09379ebeee9be65670461ffea43f4",
+        "ld-linux-x86-64.so.2": "5fc0940888e9d2e1a00e66d6b1a559c36364ee867683652e1074fa576952cc3f",
+        "libelf.so.1": "248c989360783cdc52f3659921de852c2efcc2097253ce58e34443f856412814",
+        "libdrm.so.2": "3666067992714d60452faebefbb78ebf8b6bafeb38de394b7ac9dc2a67b64b54",
+        "libdrm_amdgpu.so.1": "f9a734ec7bd7594a4660c387e8e4393b2a509d563cdd06e83e0d13a6c1b0b112",
+        "libnuma.so.1": "02d7582c5d391e460e56aa67a414360e3183b968206645b9123f9dc7bff5d009",
+        "libz.so.1": "f61677c7bdb7c2aa2a243ea781bfd16afcb361cede7b4ef76127a9d8eb9a5242",
+        "libzstd.so.1": "0a2128bc10841fb29e76d08d945864dfb0b6a66da5df6df5d8299197439e54bb"
+      }
+    },
+    "frozen_selection_manifest_sha256": "3e87ae4af7d14593d8af3a6d43a74e6e9e7980bec94143ce6d4670ec69dec0d9",
+    "source_level_reproduction": "Private kernels not published; raw timing samples support statistical recomputation.",
+    "publication_review": "ARCHIVE_HASHES_TIMINGS_RAW_OUTPUT_STRUCTURE_AND_REPORTED_AUDITS_REVIEWED; CPU_ORACLE_NOT_INDEPENDENTLY_RECOMPUTED",
+    "candidate_environment_sha256": "b18d7d9f773376aa823e18199079c981b4aa9d0c3fb3444faa7dfcd6321679bb"
+  },
+  "publication_review": "PENDING_MANUAL_REVIEW",
+  "frozen_dispatch": {
+    "1:1": [
+      "qm08",
+      "fused",
+      1
+    ],
+    "1:10": [
+      "qm08",
+      "fused",
+      1
+    ],
+    "10:1": [
+      "qm08",
+      "fusedp",
+      16
+    ],
+    "10:10": [
+      "qm141",
+      "native_wave_uniform_query_feed_top2_query_terminal",
+      16
+    ],
+    "100:1": [
+      "qm140",
+      "native_wave_uniform_query_feed_top2_query_terminal",
+      128
+    ],
+    "100:10": [
+      "qm140",
+      "native_wave_uniform_query_feed_top2_query_terminal",
+      128
+    ],
+    "1000:1": [
+      "qm140",
+      "native_wave_uniform_query_feed_top2_query_terminal",
+      128
+    ],
+    "1000:10": [
+      "qm140",
+      "native_wave_uniform_query_feed_top2_query_terminal",
+      128
+    ],
+    "10000:1": [
+      "qm140",
+      "native_wave_uniform_query_feed_top2_query_terminal",
+      128
+    ],
+    "10000:10": [
+      "qm140",
+      "native_wave_uniform_query_feed_top2_query_terminal",
+      128
+    ]
+  },
+  "csv_sha256": {
+    "samples.csv": "c268596431a3f5cd14f09bde21ab5ffd870e4cb52677594766d01b00b2e874ce",
+    "performance.csv": "a6f32af753d4cf03475764a48844b02fa929ad72d0714190113c0da4a981b44c",
+    "numerical.csv": "22b0fa404310f6a2eabd169269f758a880449dce75cf8c7b949ee53ff343b0c6"
+  },
+  "release": "v0.10.0"
+}

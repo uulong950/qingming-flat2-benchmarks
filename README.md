@@ -4,7 +4,7 @@
 
 Performance · Correctness · Numerical Accuracy · Reproducibility Evidence
 
-[公开基准页面 / Benchmark dashboard](https://uulong950.github.io/qingming-flat2-benchmarks/) · v0.9.0
+[公开基准页面 / Benchmark dashboard](https://uulong950.github.io/qingming-flat2-benchmarks/) · v0.10.0
 
 本仓库公开同设备、同数据集和同协议下的性能、CPU 数值审计、独立确认轮次原始采样与环境证据。计算内核和内部调优仍保存在独立工程，不公开。
 
@@ -15,7 +15,7 @@ Public evidence for within-device comparisons under a shared search contract. Pr
 | Device | Execution environment | Baselines | Datasets |
 |---|---|---|---:|
 | MetaX C500 | 25% compute sGPU · 16,000 MiB quota | mcFaiss | 6 |
-| AMD Radeon RX 7900 XTX 24GB | gfx1100 · Ubuntu desktop · ROCm 7.2.4 | hipVS, Faiss ROCm | 4 |
+| AMD Radeon RX 7900 XTX 24GB | gfx1100 · Ubuntu desktop · ROCm 7.2.4 | hipVS, Faiss ROCm | 5 |
 
 ## MetaX C500 · 既有结果 / Existing results
 
@@ -82,6 +82,7 @@ results-devices/
     gist960/{environment.json,performance.csv,numerical.csv,samples.csv}
     llama-128-ip/{environment.json,performance.csv,numerical.csv,samples.csv}
     laionclip512/{environment.json,performance.csv,numerical.csv,samples.csv}
+    glove100/{environment.json,performance.csv,numerical.csv,samples.csv}
 ```
 
 设备、数据集、测量口径和对照引擎均由页面动态选择。完整字段和 SHA256 参见各设备的公开环境文件。 / Select device, dataset, timing and baseline independently; see the environment files for hashes and full protocol details.
@@ -175,3 +176,31 @@ Three rounds, 72 invocations, all 48 performance gates passed. Public R3: 24 inv
 Original FP32 inputs, no renormalization; larger batches use conditional intervals and FP64 terminal. Index setup and final result transfer excluded. Desktop GPU, no locked clocks or exclusive use claimed. Tail quantiles from 13 samples are descriptive. Uploaded evidence hashes, timings and raw result structures reviewed; CPU oracle scores/rankings not independently recomputed without the dataset. Baseline source commits unavailable. No formal hardware proof or source-level reproduction claimed.
 
 [Performance](results-devices/amd-rx7900xtx/laionclip512/performance.csv) · [Numerical](results-devices/amd-rx7900xtx/laionclip512/numerical.csv) · [Samples](results-devices/amd-rx7900xtx/laionclip512/samples.csv) · [Environment](results-devices/amd-rx7900xtx/laionclip512/environment.json)
+
+## GloVe100 · AMD RX 7900 XTX / v0.10.0
+
+N=1,183,514 · D=100 · Cosine max · Q=10,000 · B=1/10/100/1000/10000 · K=1/10.
+
+| B | K | Qingming GPU P50 ms | hipVS ms | Faiss ROCm ms | vs hipVS | vs Faiss ROCm |
+|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 1 | 0.6084 | 1.2141 | 3.8981 | 1.995× | 6.407× |
+| 1 | 10 | 0.8119 | 1.5336 | 4.1819 | 1.889× | 5.151× |
+| 10 | 1 | 0.6126 | 1.5177 | 4.0472 | 2.477× | 6.606× |
+| 10 | 10 | 1.1772 | 1.2849 | 4.2300 | 1.091× | 3.593× |
+| 100 | 1 | 1.5831 | 11.1177 | 5.0225 | 7.023× | 3.173× |
+| 100 | 10 | 1.7982 | 11.1759 | 5.2892 | 6.215× | 2.941× |
+| 1000 | 1 | 12.0550 | 65.3349 | 20.7632 | 5.420× | 1.722× |
+| 1000 | 10 | 12.9011 | 65.9373 | 21.3328 | 5.111× | 1.654× |
+| 10000 | 1 | 122.7055 | 650.3803 | 202.8034 | 5.300× | 1.653× |
+| 10000 | 10 | 127.8949 | 652.3517 | 205.9153 | 5.101× | 1.610× |
+
+GPU P50：两套基线各 10/10 领先；几何平均加速 3.567× / 2.981×，最低 1.091× / 1.610×（hipVS / Faiss ROCm）。
+GPU P50: 10/10 leading against each baseline; geometric mean 3.567× / 2.981×, minimum 1.091× / 1.610× (hipVS / Faiss ROCm).
+
+三轮 90 次调用，60/60 性能门槛通过；公开 R3 30 次调用、390 对计时、120 条审计记录。每种精度 366,663 返回分数和 252 次抽样全库查询检查，无边界并列替换。
+Three rounds, 90 invocations, all 60 performance gates passed. Public R3: 30 invocations, 390 timing pairs, 120 audit rows; 366,663 returned scores and 252 sampled full-database query checks per precision. No boundary-tie replacements in R3.
+
+GPU 使用 FP32 归一化向量的内积；CPU oracle 使用原始向量余弦。条件证书的 FP64 终端针对归一化操作数。索引构建、预处理及最终传输不计入。桌面运行，未声称独占或锁频；13 次采样的尾分位数仅描述性。上传证据的哈希、计时及原始结果结构已复核，缺少原始数据库，未独立重算 CPU oracle。
+GPU uses FP32-normalized vectors and inner product; CPU oracles use original-vector cosine. Conditional certificate terminal uses FP64 on normalized operands. Index setup, preprocessing and final transfer excluded. Desktop GPU, no exclusive use or locked clocks claimed. Tail quantiles from 13 samples are descriptive. Archive hashes, timing and raw output structure reviewed; CPU oracles not independently recomputed without the dataset. No formal hardware proof or source-level reproduction claimed.
+
+[Performance](results-devices/amd-rx7900xtx/glove100/performance.csv) · [Numerical](results-devices/amd-rx7900xtx/glove100/numerical.csv) · [Samples](results-devices/amd-rx7900xtx/glove100/samples.csv) · [Environment](results-devices/amd-rx7900xtx/glove100/environment.json)
