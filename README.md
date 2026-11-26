@@ -4,7 +4,7 @@
 
 Performance · Correctness · Numerical Accuracy · Reproducibility Evidence
 
-[公开基准页面 / Benchmark dashboard](https://uulong950.github.io/qingming-flat2-benchmarks/) · v0.10.0
+[公开基准页面 / Benchmark dashboard](https://uulong950.github.io/qingming-flat2-benchmarks/) · v0.11.0
 
 本仓库公开同设备、同数据集和同协议下的性能、CPU 数值审计、独立确认轮次原始采样与环境证据。计算内核和内部调优仍保存在独立工程，不公开。
 
@@ -15,7 +15,7 @@ Public evidence for within-device comparisons under a shared search contract. Pr
 | Device | Execution environment | Baselines | Datasets |
 |---|---|---|---:|
 | MetaX C500 | 25% compute sGPU · 16,000 MiB quota | mcFaiss | 6 |
-| AMD Radeon RX 7900 XTX 24GB | gfx1100 · Ubuntu desktop · ROCm 7.2.4 | hipVS, Faiss ROCm | 5 |
+| AMD Radeon RX 7900 XTX 24GB | gfx1100 · Ubuntu desktop · ROCm 7.2.4 | hipVS, Faiss ROCm | 6 |
 
 ## MetaX C500 · 既有结果 / Existing results
 
@@ -83,6 +83,7 @@ results-devices/
     llama-128-ip/{environment.json,performance.csv,numerical.csv,samples.csv}
     laionclip512/{environment.json,performance.csv,numerical.csv,samples.csv}
     glove100/{environment.json,performance.csv,numerical.csv,samples.csv}
+    deep10m/{environment.json,performance.csv,numerical.csv,samples.csv}
 ```
 
 设备、数据集、测量口径和对照引擎均由页面动态选择。完整字段和 SHA256 参见各设备的公开环境文件。 / Select device, dataset, timing and baseline independently; see the environment files for hashes and full protocol details.
@@ -204,3 +205,31 @@ GPU 使用 FP32 归一化向量的内积；CPU oracle 使用原始向量余弦�
 GPU uses FP32-normalized vectors and inner product; CPU oracles use original-vector cosine. Conditional certificate terminal uses FP64 on normalized operands. Index setup, preprocessing and final transfer excluded. Desktop GPU, no exclusive use or locked clocks claimed. Tail quantiles from 13 samples are descriptive. Archive hashes, timing and raw output structure reviewed; CPU oracles not independently recomputed without the dataset. No formal hardware proof or source-level reproduction claimed.
 
 [Performance](results-devices/amd-rx7900xtx/glove100/performance.csv) · [Numerical](results-devices/amd-rx7900xtx/glove100/numerical.csv) · [Samples](results-devices/amd-rx7900xtx/glove100/samples.csv) · [Environment](results-devices/amd-rx7900xtx/glove100/environment.json)
+
+## DEEP10M · AMD RX 7900 XTX / v0.11.0
+
+N=10,000,000 · D=96 · Squared L2 min · Q=10,000 · B=1/10/100/1000/10000 · K=1/10.
+
+| B | K | Qingming GPU P50 ms | hipVS ms | Faiss ROCm ms | vs hipVS | vs Faiss ROCm |
+|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 1 | 5.0355 | 8.2811 | 28.3065 | 1.645× | 5.621× |
+| 1 | 10 | 6.1192 | 8.3581 | 39.1997 | 1.366× | 6.406× |
+| 10 | 1 | 5.2166 | 8.4468 | 34.6894 | 1.619× | 6.650× |
+| 10 | 10 | 6.1606 | 8.8349 | 38.6717 | 1.434× | 6.277× |
+| 100 | 1 | 10.7401 | 62.5449 | 62.1247 | 5.823× | 5.784× |
+| 100 | 10 | 10.8302 | 63.6526 | 44.4639 | 5.877× | 4.106× |
+| 1000 | 1 | 94.7610 | 661.8525 | 173.3235 | 6.984× | 1.829× |
+| 1000 | 10 | 95.5289 | 658.9425 | 180.6742 | 6.898× | 1.891× |
+| 10000 | 1 | 934.3087 | 4707.6968 | 1734.3373 | 5.039× | 1.856× |
+| 10000 | 10 | 935.7151 | 4702.0220 | 1798.2534 | 5.025× | 1.922× |
+
+GPU P50：两套基线各 10/10 领先；几何平均加速 3.418× / 3.668×，最低 1.366× / 1.829×（hipVS / Faiss ROCm）。
+GPU P50: 10/10 leading against each baseline; geometric mean 3.418× / 3.668×, minimum 1.366× / 1.829× (hipVS / Faiss ROCm).
+
+三轮 90 次调用，60/60 性能门槛通过；公开 R3 30 次调用、390 对计时、120 条审计记录。每种精度 366,663 返回距离和 204 次抽样全库查询检查，无边界并列替换。
+Three rounds, 90 invocations, all 60 performance gates passed. Public R3: 30 invocations, 390 timing pairs, 120 audit rows; 366,663 returned distances and 204 sampled full-database query checks per precision. No boundary-tie replacements in R3.
+
+原始 FP32 向量，无归一化；条件证书使用仿射 L2 筛选及原始向量 FP64 终端。索引构建、预处理及最终传输不计入。桌面运行，未声称独占或锁频；13 次采样的尾分位数仅描述性。上传证据的哈希、计时及原始结果结构已复核，缺少原始数据库，未独立重算 CPU oracle。C500 历史数据哈希未独立对齐。
+Original FP32 vectors without normalization. Conditional affine-L2 certificate and FP64 terminal on original vectors. Index setup, preprocessing and final transfer excluded. Desktop GPU, no exclusive use or locked clocks claimed. Tail quantiles from 13 samples are descriptive. Archive hashes, timing and raw output structure reviewed; CPU oracles not independently recomputed without the dataset. Historical C500 dataset hashes not independently matched. No formal hardware proof or source-level reproduction claimed.
+
+[Performance](results-devices/amd-rx7900xtx/deep10m/performance.csv) · [Numerical](results-devices/amd-rx7900xtx/deep10m/numerical.csv) · [Samples](results-devices/amd-rx7900xtx/deep10m/samples.csv) · [Environment](results-devices/amd-rx7900xtx/deep10m/environment.json)

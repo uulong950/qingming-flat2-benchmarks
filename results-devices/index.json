@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "release": "v0.10.0",
+  "release": "v0.11.0",
   "devices": [
     {
       "id": "metax-c500",
@@ -162,6 +162,18 @@
           "numerical": "results-devices/amd-rx7900xtx/glove100/numerical.csv",
           "samples": "results-devices/amd-rx7900xtx/glove100/samples.csv",
           "environment": "results-devices/amd-rx7900xtx/glove100/environment.json"
+        },
+        {
+          "id": "deep10m",
+          "name": "DEEP10M",
+          "metric": "L2 squared · min",
+          "n": 10000000,
+          "dimension": 96,
+          "queries": 10000,
+          "performance": "results-devices/amd-rx7900xtx/deep10m/performance.csv",
+          "numerical": "results-devices/amd-rx7900xtx/deep10m/numerical.csv",
+          "samples": "results-devices/amd-rx7900xtx/deep10m/samples.csv",
+          "environment": "results-devices/amd-rx7900xtx/deep10m/environment.json"
         }
       ]
     }
